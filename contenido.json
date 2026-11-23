@@ -1,0 +1,171 @@
+{
+ "_como_se_usa": "Edita este fichero para cambiar los eventos, las noticias y los vídeos de Inicio sin tocar la app. Fechas en formato AAAA-MM-DD. region: «Internacional» o «Japón». Guarda y vuelve a subir la carpeta a Netlify.",
+ "actualizado": "2026-11-22",
+ "registro": {
+  "_como_se_usa": "Pantalla de registro al entrar (correo obligatorio). No aparece hasta que «activo» sea true y estén rellenos «responsable» (nombre que se ve en público), «contacto» (correo para bajas, se ve en público) y «destino.url» (a dónde se envían los correos). «casillas»: pon false para quitar una casilla voluntaria. «destino.campos» son los nombres de los campos del formulario de destino; «fijos» son campos que se envían siempre igual. Para Netlify: url «/», campos correo/edad/correos/anuncios/fecha/texto/trampa con ese mismo nombre y fijos {\"form-name\":\"registro\"}.",
+  "activo": false,
+  "responsable": "",
+  "contacto": "",
+  "casillas": {
+   "correos": true,
+   "anuncios": true
+  },
+  "destino": {
+   "url": "",
+   "campos": {
+    "correo": "EMAIL",
+    "correos": "OPT_IN",
+    "anuncios": "ANUNCIOS",
+    "edad": "",
+    "fecha": "",
+    "texto": "",
+    "trampa": "email_address_check"
+   },
+   "fijos": {
+    "locale": "es"
+   }
+  }
+ },
+ "eventos": [
+  {
+   "fecha": "2026-11-06",
+   "nombre": "Delta Reign",
+   "region": "Internacional",
+   "texto": "Incluye la Mega Rayquaza ex de ilustración especial."
+  },
+  {
+   "fecha": "2026-11-27",
+   "nombre": "Aura Seeker",
+   "region": "Japón",
+   "texto": "Colección japonesa con Togedemaru ex y Floatzel ex."
+  },
+  {
+   "fecha": "2027-01-29",
+   "nombre": "Colección Pokémon Day 2027",
+   "region": "Internacional",
+   "texto": "Con un Pikachu promocional sellado. Aún sin anuncio oficial."
+  },
+  {
+   "fecha": "2027-02-06",
+   "nombre": "Flowing Fists",
+   "region": "Internacional",
+   "texto": "Colección en inglés con Mega Lucario Z ex. Sale en sábado."
+  },
+  {
+   "fecha": "2027-02-19",
+   "nombre": "MEGA x MEGA Parade",
+   "region": "Japón",
+   "texto": "Colección especial japonesa."
+  }
+ ],
+ "noticias": [
+  {
+   "fecha": "2026-11-20",
+   "etiqueta": "TCG",
+   "titulo": "«Flowing Fists», la próxima colección en inglés",
+   "texto": "Sale el 6 de febrero de 2027 con más de 110 cartas. Protagonistas: Mega Lucario Z ex, Mega Absol Z ex, Mega Garchomp Z ex y Mega Glimmora ex. Desde esta colección, los lanzamientos en Occidente pasan a ser en sábado.",
+   "enlace": "https://icv2.com/articles/news/view/63927/the-pokemon-company-announced-mega-evolution-flowing-fists"
+  },
+  {
+   "fecha": "2026-11-20",
+   "etiqueta": "TCG · Japón",
+   "titulo": "Aura Seeker: ya se conoce la lista completa",
+   "texto": "La colección japonesa sale el 27 de noviembre. Trae a Togedemaru ex, Floatzel ex y Crasher Wake de ilustración especial.",
+   "enlace": "https://www.serebii.net/news/2026/November.shtml"
+  },
+  {
+   "fecha": "2026-11-20",
+   "etiqueta": "Torneos",
+   "titulo": "Internacionales de Latinoamérica",
+   "texto": "Del 20 al 22 de noviembre, con TCG, Pokémon GO y Pokémon Champions. Las finales se emiten en directo el domingo.",
+   "enlace": "https://www.serebii.net/news/2026/November.shtml"
+  },
+  {
+   "fecha": "2026-11-20",
+   "etiqueta": "TCG Pocket",
+   "titulo": "Evento «Vee Vee! Eevee» en TCG Pocket",
+   "texto": "Hasta el 15 de diciembre, con un sobre que solo trae a Eevee y sus evoluciones.",
+   "enlace": "https://www.serebii.net/news/2026/November.shtml"
+  },
+  {
+   "fecha": "2026-11-06",
+   "etiqueta": "TCG",
+   "titulo": "Ya a la venta Delta Reign",
+   "texto": "La nueva colección de la era Megaevolución: 120 cartas, con la Mega Rayquaza ex como gran carta.",
+   "enlace": "https://www.serebii.net/news/2026/November.shtml"
+  },
+  {
+   "fecha": "2026-11-01",
+   "etiqueta": "TCG",
+   "titulo": "Pokémon Day 2027: colección con Pikachu sellado",
+   "texto": "Saldría el 29 de enero por 14,99 $, con un Pikachu promocional sellado «Pokemon Day 2027», moneda y tres sobres. Aún sin anuncio oficial: los detalles salen del embalaje.",
+   "enlace": "https://godisageek.com/?p=314307"
+  },
+  {
+   "fecha": "2026-08-26",
+   "etiqueta": "TCG · Japón",
+   "titulo": "MEGA x MEGA Parade, la próxima colección especial japonesa",
+   "texto": "Prevista para el 19 de febrero de 2027 en Japón y hacia marzo en inglés. Se espera Mega Raichu X y Mega Raichu Y (fuentes no oficiales).",
+   "enlace": "https://www.wargamer.com/pokemon-trading-card-game/mega-x-mega-parade-raichu"
+  },
+  {
+   "fecha": "2026-02-27",
+   "etiqueta": "Videojuegos",
+   "titulo": "Pokémon Winds & Waves, la décima generación",
+   "texto": "Llega en 2027 a Nintendo Switch 2, con una región tropical nueva y tres iniciales nuevos.",
+   "enlace": "https://screenrant.com/pokemon-new-game-november-7-2026-release-date/"
+  }
+ ],
+ "videos": [
+  {
+   "id": "0ZSnvPEnce4",
+   "titulo": "POKÉMON vs ONE PIECE: ¿cuál es mejor?",
+   "duracion": "14:53"
+  },
+  {
+   "id": "xd5ThYnC2lM",
+   "titulo": "¿Cuándo deberías comprar cajas?",
+   "duracion": "14:35"
+  },
+  {
+   "id": "GZ1s78hCu-M",
+   "titulo": "Los Pokémon más seguros para no perder dinero",
+   "duracion": "14:05"
+  },
+  {
+   "id": "FujgXx_BxK0",
+   "titulo": "Las cartas graduadas que deberías comprar, y por qué",
+   "duracion": "16:00"
+  },
+  {
+   "id": "i1wlxcbImQ8",
+   "titulo": "Por esto deberías comprar un Charizard",
+   "duracion": "16:00"
+  },
+  {
+   "id": "clQuAnvEP2s",
+   "titulo": "¿Es buen momento para comprar cartas modernas?",
+   "duracion": "15:00"
+  },
+  {
+   "id": "cSQnpN_xrh0",
+   "titulo": "Cuándo comprar cartas graduadas",
+   "duracion": "14:14"
+  },
+  {
+   "id": "00naRzBYNGE",
+   "titulo": "Compras obligatorias ahora que todo cae",
+   "duracion": "14:23"
+  },
+  {
+   "id": "_OTO-Elt3n0",
+   "titulo": "¿Deberías comprar cartas japonesas?",
+   "duracion": "15:00"
+  },
+  {
+   "id": "B66Np2ukIqY",
+   "titulo": "Las 20 cartas más bonitas… ¿y caras?",
+   "duracion": "22:00"
+  }
+ ]
+}
