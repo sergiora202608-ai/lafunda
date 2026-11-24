@@ -1,70 +1,56 @@
 {
- "actualizado": "2026-11-24T08:58",
+ "actualizado": "2026-11-24T11:15",
  "hacer": [],
- "aprobar": [],
+ "aprobar": [
+  {
+   "t": "Tarifas de lanzamiento: 3 paquetes",
+   "dept": "Comercial",
+   "l": "2026-11-24"
+  },
+  {
+   "t": "Colchón de 5 guiones de vídeo largo (guion 1 listo)",
+   "dept": "Contenido",
+   "l": "2026-11-25"
+  },
+  {
+   "t": "Short y mención para anunciar el test de la app",
+   "dept": "Contenido",
+   "l": "2026-11-25"
+  },
+  {
+   "t": "Condiciones del patrocinio",
+   "dept": "Comercial",
+   "l": "2026-11-25"
+  },
+  {
+   "t": "Kit de medios de 2 páginas y emails de contacto",
+   "dept": "Comercial",
+   "l": "2026-11-25"
+  },
+  {
+   "t": "Tanda 1: 10 emails personalizados a tiendas",
+   "dept": "Comercial",
+   "l": "2026-11-25"
+  },
+  {
+   "t": "Email en inglés para Dragon Shield, Ultimate Guard y Vault X",
+   "dept": "Comercial",
+   "l": "2026-11-26"
+  }
+ ],
  "equipo": [
   {
    "dept": "Contenido",
    "tareas": [
     {
-     "t": "Short y mención en el vídeo largo para anunciar el test de la app del viernes",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "Colchón de 5 guiones de vídeo largo listos para producir",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "15 shorts para la semana del 30/11, 5 de ellos con enlace a la app",
+     "t": "15 shorts para la semana del 30/11 (3 de 15 listos)",
      "l": "2026-11-26",
-     "legal": ""
+     "legal": "aprobado"
     },
     {
-     "t": "Vídeo largo y 3 shorts del día (cada mañana)",
+     "t": "Vídeo largo y 3 shorts del día",
      "l": "",
      "legal": "aprobado"
-    }
-   ]
-  },
-  {
-   "dept": "Comercial",
-   "tareas": [
-    {
-     "t": "Completar las 20 tiendas y conseguir el contacto de las 10 A",
-     "l": "2026-11-24",
-     "legal": "aprobado"
-    },
-    {
-     "t": "Tarifas de lanzamiento: 3 paquetes",
-     "l": "2026-11-24",
-     "legal": ""
-    },
-    {
-     "t": "Kit de medios de 2 páginas y emails de contacto",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "Condiciones del patrocinio, con identificación como publicidad",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "Tanda 1 lista para enviar: 10 emails personalizados a las tiendas A",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "Lista de 10 marcas de accesorios TCG que patrocinan a creadores",
-     "l": "2026-11-25",
-     "legal": ""
-    },
-    {
-     "t": "10 productos de Amazon para las descripciones, con el aviso de afiliado",
-     "l": "2026-11-25",
-     "legal": ""
     }
    ]
   },
@@ -72,7 +58,7 @@
    "dept": "App",
    "tareas": [
     {
-     "t": "Lanzamiento de test con usuarios (20-50 testers)",
+     "t": "Lanzamiento del test con usuarios",
      "l": "2026-11-27",
      "legal": "pendiente"
     },
@@ -82,17 +68,17 @@
      "legal": ""
     },
     {
-     "t": "Elegir alojamiento comercial, proveedor de pagos y plan de la API de precios",
+     "t": "Elegir alojamiento, pagos y plan de la API de precios",
      "l": "2026-11-29",
      "legal": ""
     },
     {
-     "t": "Recoger opiniones de los testers y medir cuántos vuelven",
+     "t": "Recoger opiniones de los testers",
      "l": "2026-11-30",
      "legal": ""
     },
     {
-     "t": "Enlace a la app en la descripción y el comentario fijado de cada vídeo",
+     "t": "Enlace a la app en cada vídeo",
      "l": "",
      "legal": ""
     }
@@ -102,7 +88,7 @@
    "dept": "Testing",
    "tareas": [
     {
-     "t": "Encontrar y ordenar los fallos antes del test del viernes",
+     "t": "Fallos antes del test del viernes (4 por arreglar)",
      "l": "2026-11-27",
      "legal": ""
     }
@@ -112,12 +98,12 @@
    "dept": "Legal",
    "tareas": [
     {
-     "t": "Revisar la app antes del test del viernes",
+     "t": "Revisar la app antes del test",
      "l": "2026-11-25",
      "legal": ""
     },
     {
-     "t": "Plantilla de condiciones del patrocinio y textos de «Publicidad» y de Amazon",
+     "t": "Plantilla de condiciones y textos de «Publicidad» y Amazon",
      "l": "2026-11-25",
      "legal": ""
     },
@@ -127,17 +113,17 @@
      "legal": ""
     },
     {
-     "t": "Aviso legal, privacidad nueva y condiciones de uso para abrir la app",
+     "t": "Aviso legal, privacidad y condiciones de uso de la app",
      "l": "2026-11-27",
      "legal": ""
     },
     {
-     "t": "Preparar la solicitud de la marca La Funda",
+     "t": "Preparar la solicitud de la marca",
      "l": "2026-11-28",
      "legal": ""
     },
     {
-     "t": "Condiciones del Premium y de los socios fundadores",
+     "t": "Condiciones del Premium y socios fundadores",
      "l": "2026-11-29",
      "legal": ""
     },
@@ -161,9 +147,100 @@
  ],
  "actividad": [
   {
+   "f": "2026-11-24T11:12",
+   "w": "Comercial",
+   "t": "Contacto de Dragon Shield, Ultimate Guard y Vault X",
+   "r": "entregado",
+   "d": "Vía de contacto de las 3 marcas y email en inglés"
+  },
+  {
+   "f": "2026-11-24T11:12",
+   "w": "Guionista",
+   "t": "Colchón: guion de reserva 1 de 5",
+   "r": "entregado",
+   "d": "«Pagaron 10 millones de yenes por esta carta… y se hundió»: 5 casos, unos 10 min 45 s"
+  },
+  {
+   "f": "2026-11-24T11:12",
+   "w": "Guionista",
+   "t": "Shorts de la semana del 30/11",
+   "r": "en curso",
+   "d": "3 de 15 listos"
+  },
+  {
+   "f": "2026-11-24T11:12",
+   "w": "Producto",
+   "t": "Fallos antes del test del viernes",
+   "r": "en curso",
+   "d": "Prueba en móvil sin errores; 4 cosas a arreglar y falta probar la cámara"
+  },
+  {
+   "f": "2026-11-24T11:12",
+   "w": "Legal",
+   "t": "Revisión de la ronda de las 11:07",
+   "r": "aprobado por Legal",
+   "d": "Guion, 3 shorts, email a marcas y prueba de la app aprobados con condiciones"
+  },
+  {
+   "f": "2026-11-24T10:40",
+   "w": "Legal",
+   "t": "Revisión de emails, marcas y Amazon",
+   "r": "aprobado por Legal",
+   "d": "Aviso de afiliado en cada descripción"
+  },
+  {
+   "f": "2026-11-24T10:35",
+   "w": "Comercial",
+   "t": "10 marcas patrocinadoras y 10 productos de Amazon",
+   "r": "entregado",
+   "d": "Marcas A: Dragon Shield, Ultimate Guard y Vault X"
+  },
+  {
+   "f": "2026-11-24T10:25",
+   "w": "Comercial",
+   "t": "Tanda 1: 10 emails a tiendas",
+   "r": "entregado",
+   "d": "Los 10 listos para tu OK"
+  },
+  {
+   "f": "2026-11-24T10:20",
+   "w": "Comercial",
+   "t": "Contactos de las tiendas A",
+   "r": "entregado",
+   "d": "10 tiendas A con vía de contacto; 19 tiendas en la lista"
+  },
+  {
+   "f": "2026-11-24T09:07",
+   "w": "Comercial",
+   "t": "Tarifas y condiciones del patrocinio",
+   "r": "entregado",
+   "d": "3 paquetes de lanzamiento y condiciones de 1 página"
+  },
+  {
+   "f": "2026-11-24T09:07",
+   "w": "Comercial",
+   "t": "Kit de medios y emails de la tanda 1",
+   "r": "entregado",
+   "d": "Kit de 2 páginas"
+  },
+  {
+   "f": "2026-11-24T09:07",
+   "w": "Guionista",
+   "t": "Anuncio del test de la app",
+   "r": "entregado",
+   "d": "Short, mención de 30 s y comentario fijado"
+  },
+  {
+   "f": "2026-11-24T09:07",
+   "w": "Legal",
+   "t": "Revisión del kit comercial y del anuncio de la app",
+   "r": "aprobado por Legal",
+   "d": "Aprobado con condiciones"
+  },
+  {
    "f": "2026-11-24T07:13",
    "w": "Guionista",
-   "t": "Vídeo largo «El Black Friday en el que las cartas te salen MÁS caras» + 3 shorts",
+   "t": "Vídeo largo del Black Friday + 3 shorts",
    "r": "entregado",
    "d": "Con las reglas de autenticidad aplicadas"
   },
@@ -179,14 +256,7 @@
    "w": "Producto",
    "t": "Plan del test de la app del viernes",
    "r": "entregado",
-   "d": "Faltaba la revisión legal de la app"
-  },
-  {
-   "f": "2026-11-24T07:13",
-   "w": "Comercial",
-   "t": "Lista de 20 tiendas con prioridad",
-   "r": "en curso",
-   "d": "14 de 20 con fuente y prioridad; faltan 6 y los contactos"
+   "d": ""
   },
   {
    "f": "2026-11-24T07:13",
