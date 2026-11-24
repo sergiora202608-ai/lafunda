@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#14161b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Control">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>La Funda · Control</title>
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f3f4f6,#0f1014);--sheet:light-dark(#fff,#1a1c22);--ink:light-dark(#14161b,#eef0f4);--mut:light-dark(#5b606c,#a2a7b3);--line:light-dark(#e2e4e9,#2b2e37);--red:light-dark(#d1293a,#ff6170);--amber:light-dark(#9a5a00,#ffb547);--ok:light-dark(#1d7a4c,#5fd39a);--top:light-dark(#14161b,#000)}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:clip;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+header{background:var(--top);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 20px}
+.wrap{max-width:720px;margin:0 auto}
+.brand{font-weight:800;font-size:15px;opacity:.7;margin:0}
+h1{margin:6px 0 4px;font-size:clamp(28px,8vw,40px);line-height:1.05;font-weight:800;text-wrap:balance}
+.sum{margin:0;color:rgba(255,255,255,.78);font-size:15px}
+main{padding:14px 14px 0}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 12px}
+.card.late{border:2px solid var(--red)}
+.card h2{font-size:18px;margin:0 0 6px;line-height:1.25}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.chip{font-size:13px;font-weight:600;padding:3px 10px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.due{font-size:13px;font-weight:700;margin-left:auto;white-space:nowrap;color:var(--mut)}
+.due.r,.r{color:var(--red)}.due.a{color:var(--amber)}
+.go{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;background:var(--ink);color:var(--sheet);font-weight:700;text-decoration:none;margin-top:6px}
+.empty{text-align:center;padding:44px 16px;color:var(--mut)}
+.empty b{display:block;font-size:20px;color:var(--ok);margin-bottom:6px}
+details.dep{background:var(--sheet);border:1px solid var(--line);border-radius:18px;margin:0 0 10px;padding:2px 16px}
+details.dep summary{display:flex;align-items:center;gap:8px;min-height:54px;font-weight:800;font-size:17px;cursor:pointer;list-style:none}
+details.dep summary::-webkit-details-marker{display:none}
+.cnt{margin-left:auto;font-size:14px;font-weight:600;color:var(--mut)}
+ul{list-style:none;margin:0 0 6px;padding:0}
+li{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+li small{display:block;color:var(--mut);font-size:13px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--sheet);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:64px;text-decoration:none;color:var(--mut);font-size:13px;font-weight:600;position:relative}
+nav a[aria-current=page]{color:var(--ink)}
+nav a[aria-current=page]::before{content:"";position:absolute;top:0;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--red)}
+nav svg{width:24px;height:24px}
+.badge{position:absolute;top:7px;left:calc(50% + 6px);min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--red);color:#fff;font-size:12px;font-weight:700;line-height:20px;text-align:center}
+.badge:empty{display:none}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><p class="brand">La Funda · Control</p><h1 id="title">Cargando…</h1><p class="sum" id="sum"></p></div></header>
+<main class="wrap" id="view"><div class="empty">Cargando…</div></main>
+<nav aria-label="Secciones"><div class="wrap">
+<a href="#hacer" data-v="hacer"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Hacer<span class="badge" id="b-hacer"></span></a>
+<a href="#aprobar" data-v="aprobar"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 0-2 7.5V13H6a2 2 0 0 0-2 2v2h16v-2a2 2 0 0 0-2-2h-4v-2.5A4 4 0 0 0 12 3z"/><path d="M5 21h14"/></svg>Aprobar<span class="badge" id="b-aprobar"></span></a>
+<a href="#actividad" data-v="actividad"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Actividad</a>
+<a href="#equipo" data-v="equipo"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2a5 5 0 0 1 5.5 4.8"/></svg>Equipo</a>
+</div></nav>
+<script>
+{
+const APP='https://claude.ai/artifact/SdRPmz9aNTcGZxsrpjHTC6';
+const W=['Analista','Guionista','Comercial','Producto','Legal'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+let D=null;
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const diff=d=>Math.round((Date.parse(d+'T12:00:00')-Date.parse(today()+'T12:00:00'))/864e5);
+const fd=d=>d.slice(8,10)+'/'+d.slice(5,7);
+function due(l){if(!l)return{t:'',c:''};const n=diff(l);if(n<0)return{t:`Vencida hace ${-n} d`,c:'r'};if(n===0)return{t:'Vence hoy',c:'r'};if(n===1)return{t:'Vence mañana',c:'a'};return{t:'Para el '+fd(l),c:n<=3?'a':''}}
+const ago=f=>{const m=Math.round((Date.now()-Date.parse(f))/6e4);if(!isFinite(m))return '';return m<60?`hace ${Math.max(m,0)} min`:m<1440?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} d`};
+const hm=f=>f.slice(0,10)===today()?f.slice(11,16):fd(f.slice(0,10))+' '+f.slice(11,16);
+const bad=r=>/bloque|rechaz|fall/i.test(r||'');
+const view=()=>{const h=location.hash.slice(1);return ['hacer','aprobar','actividad','equipo'].includes(h)?h:'hacer'};
+const empty=(a,b)=>`<div class="empty"><b>${a}</b>${b}</div>`;
+const card=(i,btn)=>{const d=due(i.l);return `<article class="card${d.c==='r'?' late':''}"><div class="row"><span class="chip">${esc(i.dept)}</span><span class="due ${d.c}">${d.t}</span></div><h2>${esc(i.t)}</h2><a class="go" href="${APP}" target="_blank" rel="noopener">${btn}</a></article>`};
+function render(){
+  const v=view();
+  document.querySelectorAll('nav a').forEach(a=>a.dataset.v===v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  if(!D)return;
+  const H=D.hacer||[],A=D.aprobar||[],AC=(D.actividad||[]).slice().sort((a,b)=>String(b.f).localeCompare(String(a.f))),EQ=D.equipo||[];
+  $('b-hacer').textContent=H.length||'';$('b-aprobar').textContent=A.length||'';
+  const total=H.length+A.length;
+  $('title').textContent=total?`${total} ${total===1?'cosa te espera':'cosas te esperan'}`:'Todo al día';
+  $('sum').textContent=`${H.length} para hacer · ${A.length} para aprobar · actualizado ${ago(D.actualizado)}`;
+  let html='';
+  if(v==='hacer')html=H.length?H.map(i=>card(i,'Responder en Claude')).join(''):empty('Nada que hacer','Cuando el equipo te necesite, saldrá aquí.');
+  else if(v==='aprobar')html=A.length?A.map(i=>card(i,'Revisar y aprobar en Claude')).join(''):empty('Nada para aprobar','Aquí saldrá lo que prepare el equipo.');
+  else if(v==='actividad'){
+    const now=W.map(w=>{const a=AC.find(x=>x.w===w);return `<li><span><b>${w}</b><small>${a?esc(a.t)+' · <span class="'+(bad(a.r)?'r':'')+'">'+esc(a.r)+'</span>':'Sin actividad todavía'}</small></span><span class="due">${a?ago(a.f):''}</span></li>`}).join('');
+    const feed=AC.slice(0,60).map(a=>`<li><span><b>${esc(a.w)}</b> · ${esc(a.t)}<small><span class="${bad(a.r)?'r':''}">${esc(a.r)}</span>${a.d?' · '+esc(a.d):''}</small></span><span class="due">${esc(hm(a.f))}</span></li>`).join('');
+    html=`<section class="card"><h2>Qué hace cada uno</h2><ul>${now}</ul></section><section class="card"><h2>Lo último que han hecho</h2><ul>${feed||'<li><span>Aún no hay actividad</span></li>'}</ul></section>`;
+  }
+  else html=EQ.map(g=>`<details class="dep"><summary>${esc(g.dept)}<span class="cnt">${g.tareas.length} en marcha</span></summary><ul>${g.tareas.map(i=>{const x=due(i.l);return `<li><span>${esc(i.t)}${i.legal==='pendiente'?'<small>Espera a Legal</small>':i.legal==='aprobado'?'<small>Legal OK</small>':''}</span><span class="due ${x.c}">${x.t}</span></li>`}).join('')}</ul></details>`).join('')||empty('Sin tareas','');
+  $('view').innerHTML=html;
+}
+async function load(){
+  try{const r=await fetch('data.json?t='+Date.now(),{cache:'no-store'});if(r.ok){D=await r.json();render()}}
+  catch(e){if(!D)$('view').innerHTML=empty('Sin conexión','Prueba otra vez en un momento.')}
+}
+addEventListener('hashchange',()=>{render();scrollTo(0,0)});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+render();load();setInterval(load,300000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "actualizado": "2026-11-24T08:52",
+  "hacer": [],
+  "aprobar": [],
+  "equipo": [
+    {"dept": "Contenido", "tareas": [
+      {"t": "Short y mención en el vídeo largo para anunciar el test de la app del viernes", "l": "2026-11-25", "legal": "pendiente"},
+      {"t": "Colchón de 5 guiones de vídeo largo listos para producir", "l": "2026-11-25", "legal": "pendiente"},
+      {"t": "15 shorts para la semana del 30/11, 5 de ellos con enlace a la app", "l": "2026-11-26", "legal": "pendiente"},
+      {"t": "Vídeo largo y 3 shorts del día (cada mañana)", "l": "", "legal": "aprobado"}
+    ]},
+    {"dept": "Comercial", "tareas": [
+      {"t": "Completar las 20 tiendas y conseguir el contacto de las 10 A", "l": "2026-11-24", "legal": "aprobado"},
+      {"t": "Tarifas de lanzamiento: 3 paquetes", "l": "2026-11-24", "legal": ""},
+      {"t": "Kit de medios de 2 páginas y emails de contacto", "l": "2026-11-25", "legal": ""},
+      {"t": "Condiciones del patrocinio, con identificación como publicidad", "l": "2026-11-25", "legal": "pendiente"},
+      {"t": "Tanda 1 lista para enviar: 10 emails personalizados a las tiendas A", "l": "2026-11-25", "legal": "pendiente"},
+      {"t": "Lista de 10 marcas de accesorios TCG que patrocinan a creadores", "l": "2026-11-25", "legal": ""},
+      {"t": "10 productos de Amazon para las descripciones, con el aviso de afiliado", "l": "2026-11-25", "legal": "pendiente"}
+    ]},
+    {"dept": "App", "tareas": [
+      {"t": "Lanzamiento de test con usuarios (20-50 testers)", "l": "2026-11-27", "legal": "pendiente"},
+      {"t": "Definir qué es gratis y qué es Premium", "l": "2026-11-28", "legal": ""},
+      {"t": "Elegir alojamiento comercial, proveedor de pagos y plan de la API de precios", "l": "2026-11-29", "legal": ""},
+      {"t": "Recoger opiniones de los testers y medir cuántos vuelven", "l": "2026-11-30", "legal": ""},
+      {"t": "Enlace a la app en la descripción y el comentario fijado de cada vídeo", "l": "", "legal": ""}
+    ]},
+    {"dept": "Testing", "tareas": [
+      {"t": "Encontrar y ordenar los fallos antes del test del viernes", "l": "2026-11-27", "legal": ""}
+    ]},
+    {"dept": "Legal", "tareas": [
+      {"t": "Revisar la app antes del test del viernes", "l": "2026-11-25", "legal": ""},
+      {"t": "Plantilla de condiciones del patrocinio y textos de «Publicidad» y de Amazon", "l": "2026-11-25", "legal": ""},
+      {"t": "Buscar «La Funda» en la OEPM y la EUIPO", "l": "2026-11-26", "legal": ""},
+      {"t": "Aviso legal, privacidad nueva y condiciones de uso para abrir la app", "l": "2026-11-27", "legal": ""},
+      {"t": "Preparar la solicitud de la marca La Funda", "l": "2026-11-28", "legal": ""},
+      {"t": "Condiciones del Premium y de los socios fundadores", "l": "2026-11-29", "legal": ""},
+      {"t": "Revisar cada guion antes de publicarlo", "l": "", "legal": ""}
+    ]},
+    {"dept": "Análisis", "tareas": [
+      {"t": "Informe de competencia diario", "l": "", "legal": ""}
+    ]}
+  ],
+  "actividad": [
+    {"f": "2026-11-24T07:13", "w": "Guionista", "t": "Vídeo largo «El Black Friday en el que las cartas te salen MÁS caras» + 3 shorts", "r": "entregado", "d": "Con las reglas de autenticidad aplicadas"},
+    {"f": "2026-11-24T07:13", "w": "Legal", "t": "Revisión de los guiones de hoy y del plan del test", "r": "aprobado por Legal", "d": "Guiones aprobados con condiciones"},
+    {"f": "2026-11-24T07:13", "w": "Producto", "t": "Plan del test de la app del viernes", "r": "entregado", "d": "Faltaba la revisión legal de la app"},
+    {"f": "2026-11-24T07:13", "w": "Comercial", "t": "Lista de 20 tiendas con prioridad", "r": "en curso", "d": "14 de 20 con fuente y prioridad; faltan 6 y los contactos"},
+    {"f": "2026-11-24T07:13", "w": "Analista", "t": "Informe de competencia del día", "r": "bloqueado", "d": "El informe de hoy no estaba a tiempo; se usó el del 23/11"}
+  ]
+}

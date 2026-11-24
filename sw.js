@@ -23,7 +23,7 @@ async function refreshDoc(){
 const timed=(req,ms)=>new Promise((ok,ko)=>{let done=false; const t=setTimeout(()=>{if(!done){done=true; ko(new Error('lento'));}},ms);
   fetch(req).then(r=>{if(r.ok){const cp=r.clone(); caches.open(C).then(c=>c.put(req,cp)).catch(()=>{});} if(!done){done=true; clearTimeout(t); ok(r);}},x=>{if(!done){done=true; clearTimeout(t); ko(x);}});});
 self.addEventListener('fetch',e=>{
-  const req=e.request, u=new URL(req.url); if(req.method!=='GET'||u.origin!==location.origin) return;
+  const req=e.request, u=new URL(req.url); if(req.method!=='GET'||u.origin!==location.origin||u.pathname.includes('/control/')) return;
   if(req.mode==='navigate'||/\/(index\.html)?$/.test(u.pathname)){
     const cached=doc();
     e.respondWith(cached.then(r=>r||fetch(req).then(n=>{if(n.ok){const cp=n.clone(); caches.open(C).then(c=>c.put('index.html',cp)).catch(()=>{});} return n;})));
