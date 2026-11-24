@@ -780,7 +780,7 @@ window.LF_EX={"date":"2026-11-20","cards":[{"id":"sv03.5-199","lang":"es","name"
 "use strict";
 /* ==================== LA FUNDA · APP ====================
    Una sola página, sin servidor. Todo lo de cada persona se guarda en su navegador. */
-const APPV='2.10 · 23 nov 2026';
+const APPV='2.11 · 24 nov 2026';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -941,7 +941,7 @@ _freeHooks.push(()=>{CC={}; if(_cw){clearTimeout(_cw); _cw=0;}});
 try{cacheFlush();}catch(e){}
 const cacheGet=k=>{const c=CC[k]; return c&&Date.now()-c.t<TTL?c.d:null};
 const TOP=['charizard','pikachu','umbreon','rayquaza','mewtwo','gengar','mew','eevee','lugia','blastoise','venusaur','gyarados','giratina','lucario','greninja','sylveon','espeon','dragonite','snorlax','arceus','magikarp','latias','latios','ho-oh'];
-const _jf={}, _jq=[]; let _jn=0, _jcool=0;
+const _jf={}, _jq=[]; let _jn=0, _jcool=0, _jbad=0, _jbadT=0;
 const _jslot=()=>new Promise(ok=>{if(_jn<8){_jn++; ok();} else _jq.push(ok);});
 const _jfree=()=>{const nx=_jq.shift(); if(nx) nx(); else _jn--;};
 async function getJSON(url){
@@ -951,7 +951,10 @@ async function getJSON(url){
     await _jslot();
     try{if(Date.now()<_jcool) throw new Error('HTTP 429 (en pausa)');
       const r=await fetch(url);
-      if(r.status===429||r.status===503){const ra=parseInt(r.headers.get('retry-after'),10); _jcool=Date.now()+Math.min(120,Math.max(20,ra>0?ra:30))*1000;}
+      /* «para» de verdad (429): se respeta. Un fallo suelto del servicio (5xx) no: solo se hace una pausa si falla 4 veces seguidas en 15 s */
+      if(r.status===429){const ra=parseInt(r.headers.get('retry-after'),10); _jcool=Date.now()+Math.min(120,Math.max(10,ra>0?ra:20))*1000;}
+      else if(r.status>=500){const t=Date.now(); if(t-_jbadT>15000) _jbad=0; _jbadT=t; if(++_jbad>=4){_jbad=0; _jcool=t+20000;}}
+      else if(r.ok) _jbad=0;
       if(!r.ok) throw new Error('HTTP '+r.status); return await r.json();}
     finally{_jfree();}
   })();
@@ -1584,11 +1587,29 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('click',e=>{
   const now=Date.now();
+  /* al tocar un botón que lleva dentro un selector de foto o de fichero, el navegador «pulsa» después el selector:
+     ese segundo aviso no es un doble toque y no se frena, o la cámara y la galería no se abrirían */
+  if(e.target&&e.target.matches&&e.target.matches('input[type="file"]')) return;
   /* un segundo toque rápido no cae en lo que acaba de aparecer: ni en la pantalla de debajo al cerrarse una hoja, ni en la hoja recién pintada */
   if((now-_sheetShut<400&&!e.target.closest('#sheet'))||(now-_sheetDraw<400&&e.target.closest('#sheet'))){e.stopImmediatePropagation(); e.preventDefault(); return;}
   const b=e.target.closest('button,a,label.btn,[data-act]'); if(!b||b.hasAttribute('data-rep')) return;
   if(b===_tapEl&&now-_tapT<400){e.stopImmediatePropagation(); e.preventDefault(); return;}
   _tapEl=b; _tapT=now;
+},true);
+
+/* ---- Cámara en Android: si Chrome no tiene permiso de cámara, tocar el recuadro no hace nada y no avisa.
+   Si a los 3 s de tocarlo la app sigue en pantalla (no se ha abierto la cámara ni se ha elegido foto), se explica y se da otra forma de abrirla. ---- */
+const CAM_ALT={scanIn:'scanIn2',v1a:'v1b',pg1:'pg2',f1:'f2'};
+document.addEventListener('click',e=>{
+  const inp=e.target; if(!inp||!inp.matches||!inp.matches('input[type="file"][capture]')||!/Android/i.test(navigator.userAgent)) return;
+  const box=inp.closest('label'); if(!box) return; let away=false; const gone=()=>{away=true;};
+  document.addEventListener('visibilitychange',gone); window.addEventListener('blur',gone); inp.addEventListener('change',gone,{once:true}); inp.addEventListener('cancel',gone,{once:true});
+  setTimeout(()=>{
+    document.removeEventListener('visibilitychange',gone); window.removeEventListener('blur',gone);
+    if(away||document.hidden||!document.hasFocus()||!box.isConnected||(box.parentNode&&box.parentNode.querySelector('.camhint'))) return;
+    const alt=CAM_ALT[inp.id];
+    box.insertAdjacentHTML('afterend',`<div class="errbox camhint" role="status"><b>¿No se ha abierto la cámara?</b><span class="small">En algunos móviles Chrome no tiene permiso para usarla.${alt?' Pulsa «Abrir de otra forma» y elige Cámara o una foto que ya tengas.':''} Para arreglarlo del todo: Ajustes del móvil → Aplicaciones → Chrome → Permisos → Cámara → Permitir.</span>${alt?`<label class="btn out sm" for="${alt}" style="cursor:pointer">Abrir de otra forma</label>`:''}</div>`);
+  },3000);
 },true);
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheet').hidden) closeSheet();});
