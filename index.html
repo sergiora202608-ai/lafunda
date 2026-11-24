@@ -746,6 +746,25 @@ body.gated .view{padding-bottom:var(--s5)}
 .regopt b{color:var(--ink)}
 .inp[aria-invalid="true"]{border-color:var(--bad)}
 .priv p+p{margin-top:var(--s3)}
+
+/* Cámara dentro de la app (Android) */
+body.cam-on{overflow:hidden}
+.cam{position:fixed;inset:0;z-index:90;background:#000;color:var(--on-brand);display:grid;grid-template-rows:auto 1fr auto auto}
+.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.cam.fail video{display:none}
+.cam-top,.cam-bar,.cam-alt,.cam-msg{position:relative;z-index:1}
+.cam-top{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:calc(var(--s3) + env(safe-area-inset-top,0px)) var(--s4) var(--s3);background:linear-gradient(#000a,#0000)}
+.cam-top b{font-size:17px;font-weight:900}
+.cam .btn.ghost,.cam .btn.out{color:var(--on-brand);background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.65)}
+.cam-msg{align-self:center;justify-self:center;max-width:34ch;margin:0 var(--s4);padding:var(--s3) var(--s4);border-radius:var(--r-md);background:rgba(0,0,0,.72);font-size:15px;font-weight:600;line-height:1.4;text-align:center}
+.cam-msg[hidden]{display:none}
+.cam-bar{grid-row:3;display:flex;justify-content:center;padding:var(--s3)}
+.cam.fail .cam-bar{display:none}
+.cam-shot{appearance:none;width:76px;height:76px;border-radius:50%;border:5px solid var(--on-brand);background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 4px #000;cursor:pointer;transition:transform var(--dur-1) var(--ease-out)}
+.cam-shot:active{transform:scale(.92)}
+.cam-shot:disabled{opacity:.4}
+.cam-alt{grid-row:4;display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2);padding:var(--s2) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom,0px));background:linear-gradient(#0000,#000a)}
+.cam :focus-visible{outline-color:var(--focus-on-dark)}
 </style>
 </head>
 <body>
@@ -780,7 +799,7 @@ window.LF_EX={"date":"2026-11-20","cards":[{"id":"sv03.5-199","lang":"es","name"
 "use strict";
 /* ==================== LA FUNDA · APP ====================
    Una sola página, sin servidor. Todo lo de cada persona se guarda en su navegador. */
-const APPV='2.11 · 24 nov 2026';
+const APPV='2.12 · 24 nov 2026';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -1597,19 +1616,77 @@ document.addEventListener('click',e=>{
   _tapEl=b; _tapT=now;
 },true);
 
-/* ---- Cámara en Android: si Chrome no tiene permiso de cámara, tocar el recuadro no hace nada y no avisa.
-   Si a los 3 s de tocarlo la app sigue en pantalla (no se ha abierto la cámara ni se ha elegido foto), se explica y se da otra forma de abrirla. ---- */
+/* ---- Cámara en Android ----
+   El recuadro de cámara abre la cámara DENTRO de la app (imagen en directo y botón de disparo). Así no depende de que el
+   móvil lance su propia app de cámara, que en algunos Android con la app instalada no se abre y no avisa.
+   Si la app no puede usar la cámara (sin permiso o sin cámara) se dice y quedan las otras dos formas: la cámara del móvil y elegir una foto.
+   La foto entra por el mismo sitio que si viniera del selector de fotos. ---- */
 const CAM_ALT={scanIn:'scanIn2',v1a:'v1b',pg1:'pg2',f1:'f2'};
-document.addEventListener('click',e=>{
-  const inp=e.target; if(!inp||!inp.matches||!inp.matches('input[type="file"][capture]')||!/Android/i.test(navigator.userAgent)) return;
-  const box=inp.closest('label'); if(!box) return; let away=false; const gone=()=>{away=true;};
+const CAM_ON=/Android/i.test(navigator.userAgent)&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+let _cam=null;
+function camClose(){
+  if(!_cam) return; const c=_cam; _cam=null;
+  try{if(c.stream) c.stream.getTracks().forEach(t=>t.stop());}catch(e){}
+  c.el.remove(); document.body.classList.remove('cam-on');
+}
+function camGive(inp,blob){
+  try{const dt=new DataTransfer(); dt.items.add(new File([blob],'foto-'+Date.now()+'.jpg',{type:blob.type||'image/jpeg'})); inp.files=dt.files; inp.dispatchEvent(new Event('change',{bubbles:true})); return true;}catch(e){return false;}
+}
+/* si se lanza la cámara del móvil y a los 3 s la app sigue en pantalla, no se ha abierto: se explica y se da otra forma */
+function camWatch(inp){
+  const box=inp.closest('label'); if(!box||!/Android/i.test(navigator.userAgent)) return; let away=false; const gone=()=>{away=true;};
   document.addEventListener('visibilitychange',gone); window.addEventListener('blur',gone); inp.addEventListener('change',gone,{once:true}); inp.addEventListener('cancel',gone,{once:true});
   setTimeout(()=>{
     document.removeEventListener('visibilitychange',gone); window.removeEventListener('blur',gone);
     if(away||document.hidden||!document.hasFocus()||!box.isConnected||(box.parentNode&&box.parentNode.querySelector('.camhint'))) return;
     const alt=CAM_ALT[inp.id];
-    box.insertAdjacentHTML('afterend',`<div class="errbox camhint" role="status"><b>¿No se ha abierto la cámara?</b><span class="small">En algunos móviles Chrome no tiene permiso para usarla.${alt?' Pulsa «Abrir de otra forma» y elige Cámara o una foto que ya tengas.':''} Para arreglarlo del todo: Ajustes del móvil → Aplicaciones → Chrome → Permisos → Cámara → Permitir.</span>${alt?`<label class="btn out sm" for="${alt}" style="cursor:pointer">Abrir de otra forma</label>`:''}</div>`);
+    box.insertAdjacentHTML('afterend',`<div class="errbox camhint" role="status"><b>¿No se ha abierto la cámara del móvil?</b><span class="small">En algunos móviles el navegador no tiene permiso para usarla: Ajustes del móvil → Aplicaciones → tu navegador → Permisos → Cámara → Permitir.${alt?' Mientras tanto, pulsa «Elegir una foto».':''}</span>${alt?`<label class="btn out sm" for="${alt}" style="cursor:pointer">Elegir una foto</label>`:''}</div>`);
   },3000);
+}
+async function camOpen(inp){
+  if(_cam) return; const box=inp.closest('label'), tb=box&&box.querySelector('b'), title=tb?tb.textContent:'Foto', alt=CAM_ALT[inp.id];
+  const el=document.createElement('div'); el.className='cam'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label',title);
+  el.innerHTML=`<video playsinline autoplay muted></video>
+    <div class="cam-top"><b>${esc(title)}</b><button class="btn ghost sm" type="button" data-cam="x">Cerrar</button></div>
+    <div class="cam-msg" role="status">Abriendo la cámara…</div>
+    <div class="cam-bar"><button class="cam-shot" type="button" data-cam="shot" aria-label="Hacer la foto" disabled></button></div>
+    <div class="cam-alt"><button class="btn out sm" type="button" data-cam="native">Cámara del móvil</button>${alt?'<button class="btn out sm" type="button" data-cam="pick">Elegir una foto</button>':''}</div>`;
+  document.body.appendChild(el); document.body.classList.add('cam-on'); _cam={el,stream:null,inp};
+  const msg=t=>{const m=el.querySelector('.cam-msg'); m.textContent=t||''; m.hidden=!t;};
+  el.addEventListener('click',async e=>{
+    const b=e.target.closest('[data-cam]'); if(!b) return; const k=b.dataset.cam;
+    if(k==='x'){camClose(); return;}
+    if(k==='native'){camClose(); inp.dataset.native='1'; inp.click(); return;}
+    if(k==='pick'){camClose(); const a=$(alt); if(a) a.click(); return;}
+    if(k==='shot'){
+      b.disabled=true; msg('Guardando la foto…'); const v=el.querySelector('video'), st=_cam&&_cam.stream; let blob=null;
+      /* primero la foto a toda resolución; si el móvil no puede o tarda, la imagen que se ve en pantalla */
+      try{const tr=st.getVideoTracks()[0]; if(window.ImageCapture) blob=await Promise.race([new ImageCapture(tr).takePhoto(),new Promise((ok,ko)=>setTimeout(()=>ko(new Error('lenta')),4000))]);}catch(x){blob=null;}
+      if(!blob||!blob.size){try{const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; c.getContext('2d').drawImage(v,0,0); blob=await new Promise(ok=>c.toBlob(ok,'image/jpeg',0.95));}catch(x){blob=null;}}
+      if(!_cam) return;
+      if(!blob||!blob.size){msg('No hemos podido hacer la foto. Prueba con «Cámara del móvil».'); b.disabled=false; return;}
+      camClose(); if(!camGive(inp,blob)) toast('No hemos podido usar esa foto. Prueba con «Subir una foto».');
+    }
+  });
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
+    if(!_cam||_cam.el!==el){stream.getTracks().forEach(t=>t.stop()); return;}
+    _cam.stream=stream; const v=el.querySelector('video'); v.srcObject=stream; try{await v.play();}catch(x){}
+    msg(''); el.classList.add('live'); const sh=el.querySelector('[data-cam="shot"]'); sh.disabled=false; try{sh.focus();}catch(x){}
+  }catch(x){
+    if(!_cam||_cam.el!==el) return; el.classList.add('fail'); const n=x&&x.name;
+    msg(n==='NotAllowedError'||n==='SecurityError'?'La app no tiene permiso para usar la cámara. Para dárselo: Ajustes del móvil → Aplicaciones → tu navegador → Permisos → Cámara → Permitir, y vuelve a abrir la app. Mientras tanto, usa uno de los botones de abajo.'
+      :n==='NotFoundError'||n==='OverconstrainedError'?'No encontramos ninguna cámara en este móvil. Usa uno de los botones de abajo.':'No hemos podido abrir la cámara. Usa uno de los botones de abajo.');
+  }
+}
+window.addEventListener('hashchange',camClose); window.addEventListener('popstate',camClose);
+document.addEventListener('visibilitychange',()=>{if(document.hidden) camClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&_cam) camClose();});
+document.addEventListener('click',e=>{
+  const inp=e.target; if(!inp||!inp.matches||!inp.matches('input[type="file"][capture]')) return;
+  if(inp.dataset.native){delete inp.dataset.native; camWatch(inp); return;}   /* se ha pedido a propósito la cámara del móvil */
+  if(!CAM_ON) return;
+  e.preventDefault(); e.stopImmediatePropagation(); camOpen(inp);
 },true);
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheet').hidden) closeSheet();});
@@ -4086,7 +4163,12 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 if(window.LF_PWA&&'serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
   window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
   /* la app instalada abre con la copia guardada; si al comprobarlo hay una versión nueva, se avisa y se puede cargar ya */
-  navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.type==='lf-nueva'&&!document.body.classList.contains('gated')) toast('Hay una versión nueva de La Funda',()=>location.reload(),'Actualizar');});
+  /* si se detecta nada más abrir y todavía no se ha tocado nada, se carga sola (una vez por sesión); si no, se avisa */
+  let _touched=false; ['pointerdown','keydown'].forEach(k=>window.addEventListener(k,()=>{_touched=true;},{capture:true,passive:true}));
+  navigator.serviceWorker.addEventListener('message',e=>{if(!e.data||e.data.type!=='lf-nueva'||document.body.classList.contains('gated')) return;
+    let did=false; try{did=!!sessionStorage.getItem('lf-upd');}catch(x){}
+    if(!_touched&&!did&&performance.now()<8000){try{sessionStorage.setItem('lf-upd','1');}catch(x){} location.reload(); return;}
+    toast('Hay una versión nueva de La Funda',()=>location.reload(),'Actualizar');});
 }
 
 })();

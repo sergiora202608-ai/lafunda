@@ -3,7 +3,7 @@
      Si la hay, se guarda para la próxima vez y se avisa a la app («Hay una versión nueva» → Actualizar).
    - Los ficheros de la app (contenido.json, iconos…): red con 3 s de margen; si tarda más o falla, la copia guardada.
    - Lo que no es de la app (otras páginas del mismo sitio) no pasa por aquí. */
-const C='lafunda-v19';
+const C='lafunda-v20';
 const SHELL=['./','index.html','contenido.json','manifest.webmanifest','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
