@@ -1,6 +1,12 @@
 {
- "actualizado": "2026-11-24T11:15",
- "hacer": [],
+ "actualizado": "2026-11-24T11:38",
+ "hacer": [
+  {
+   "t": "Tu nombre y correo de contacto para el aviso legal de la app",
+   "dept": "Legal",
+   "l": "2026-11-25"
+  }
+ ],
  "aprobar": [
   {
    "t": "Tarifas de lanzamiento: 3 paquetes",
@@ -58,6 +64,11 @@
    "dept": "App",
    "tareas": [
     {
+     "t": "Convertir la lista legal de lanzamiento en tareas de desarrollo (orden de Sergio)",
+     "l": "2026-11-25",
+     "legal": ""
+    },
+    {
      "t": "Lanzamiento del test con usuarios",
      "l": "2026-11-27",
      "legal": "pendiente"
@@ -97,6 +108,11 @@
   {
    "dept": "Legal",
    "tareas": [
+    {
+     "t": "Qué hace falta para lanzar la app y qué riesgos hay (orden de Sergio)",
+     "l": "2026-11-24",
+     "legal": ""
+    },
     {
      "t": "Revisar la app antes del test",
      "l": "2026-11-25",
