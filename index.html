@@ -765,6 +765,10 @@ body.cam-on{overflow:hidden}
 .cam-shot:disabled{opacity:.4}
 .cam-alt{grid-row:4;display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2);padding:var(--s2) var(--s4) calc(var(--s4) + env(safe-area-inset-bottom,0px));background:linear-gradient(#0000,#000a)}
 .cam :focus-visible{outline-color:var(--focus-on-dark)}
+.cam-diag{grid-row:3;position:relative;z-index:1;align-self:start;justify-self:center;max-width:36ch;margin:var(--s2) var(--s4) 0;font-size:12px;line-height:1.35;color:rgba(255,255,255,.75);text-align:center;word-break:break-word}
+.cam.fail .cam-msg{align-self:end}
+.cam.fail{grid-template-rows:auto 1fr 1fr auto}
+.cam .btn.pri{color:var(--on-brand)}
 </style>
 </head>
 <body>
@@ -799,7 +803,7 @@ window.LF_EX={"date":"2026-11-20","cards":[{"id":"sv03.5-199","lang":"es","name"
 "use strict";
 /* ==================== LA FUNDA · APP ====================
    Una sola página, sin servidor. Todo lo de cada persona se guarda en su navegador. */
-const APPV='2.12 · 24 nov 2026';
+const APPV='2.13 · 24 nov 2026';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -1668,16 +1672,47 @@ async function camOpen(inp){
       camClose(); if(!camGive(inp,blob)) toast('No hemos podido usar esa foto. Prueba con «Subir una foto».');
     }
   });
-  try{
-    const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
-    if(!_cam||_cam.el!==el){stream.getTracks().forEach(t=>t.stop()); return;}
-    _cam.stream=stream; const v=el.querySelector('video'); v.srcObject=stream; try{await v.play();}catch(x){}
-    msg(''); el.classList.add('live'); const sh=el.querySelector('[data-cam="shot"]'); sh.disabled=false; try{sh.focus();}catch(x){}
-  }catch(x){
-    if(!_cam||_cam.el!==el) return; el.classList.add('fail'); const n=x&&x.name;
-    msg(n==='NotAllowedError'||n==='SecurityError'?'La app no tiene permiso para usar la cámara. Para dárselo: Ajustes del móvil → Aplicaciones → tu navegador → Permisos → Cámara → Permitir, y vuelve a abrir la app. Mientras tanto, usa uno de los botones de abajo.'
-      :n==='NotFoundError'||n==='OverconstrainedError'?'No encontramos ninguna cámara en este móvil. Usa uno de los botones de abajo.':'No hemos podido abrir la cámara. Usa uno de los botones de abajo.');
+  const start=async()=>{
+    el.classList.remove('fail'); msg('Abriendo la cámara…'); const rb=el.querySelector('[data-cam="retry"]'); if(rb) rb.remove(); const dg=el.querySelector('.cam-diag'); if(dg) dg.remove();
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
+      if(!_cam||_cam.el!==el){stream.getTracks().forEach(t=>t.stop()); return;}
+      _cam.stream=stream; const v=el.querySelector('video'); v.srcObject=stream; try{await v.play();}catch(x){}
+      msg(''); el.classList.add('live'); const sh=el.querySelector('[data-cam="shot"]'); sh.disabled=false; try{sh.focus();}catch(x){}
+    }catch(x){
+      if(!_cam||_cam.el!==el) return; el.classList.add('fail');
+      const D=await camDiag(x); if(!_cam||_cam.el!==el) return;
+      msg(D.text);
+      el.querySelector('.cam-msg').insertAdjacentHTML('afterend',`<p class="cam-diag">${esc(D.detail)}</p>`);
+      el.querySelector('.cam-alt').insertAdjacentHTML('afterbegin','<button class="btn pri sm" type="button" data-cam="retry">Volver a intentarlo</button>');
+    }
+  };
+  el.addEventListener('click',e=>{if(e.target.closest('[data-cam="retry"]')) start();});
+  start();
+}
+/* qué ha fallado exactamente y qué hacer, con el navegador que se está usando */
+function camBrowser(){
+  const u=navigator.userAgent;
+  return /SamsungBrowser/i.test(u)?'Samsung Internet':/EdgA/i.test(u)?'Edge':/OPR|Opera/i.test(u)?'Opera':/Firefox/i.test(u)?'Firefox':/MiuiBrowser|XiaoMi/i.test(u)?'Mi Browser':/HuaweiBrowser/i.test(u)?'Huawei Browser':/Chrome/i.test(u)?'Chrome':'tu navegador';
+}
+async function camDiag(x){
+  const n=(x&&x.name)||'Error', m=String((x&&x.message)||''), br=camBrowser(), inst=matchMedia('(display-mode: standalone)').matches;
+  let st='?'; try{st=(await navigator.permissions.query({name:'camera'})).state;}catch(e){}
+  const site=br==='Chrome'?'Chrome → los tres puntos → Configuración → Configuración de sitios → Cámara: el interruptor encendido y, si sergiora202608-ai.github.io está en «Bloqueados», tócalo y pon «Permitir».'
+    :br==='Samsung Internet'?'Samsung Internet → las tres rayas → Ajustes → Sitios y descargas → Permisos de sitios → Cámara: que sergiora202608-ai.github.io no esté bloqueado.'
+    :`${br} → Configuración → permisos de sitios → Cámara: que sergiora202608-ai.github.io no esté bloqueado.`;
+  const sys=`Ajustes del móvil → Aplicaciones → ${br} → Permisos → Cámara → Permitir.`;
+  let text;
+  if(n==='NotAllowedError'||n==='SecurityError'){
+    if(/system/i.test(m)) text=`El móvil no deja a ${br} usar la cámara. ${sys} Luego pulsa «Volver a intentarlo».`;
+    else if(/dismiss/i.test(m)) text='Se ha cerrado la pregunta del permiso sin contestar. Pulsa «Volver a intentarlo» y elige «Permitir».';
+    else text=`${br} tiene bloqueada la cámara para esta web. ${site} Luego pulsa «Volver a intentarlo».${inst?' Si sigue igual, cierra la app del todo y ábrela otra vez.':''}`;
   }
+  else if(n==='NotReadableError'||n==='AbortError') text='La cámara la está usando otra app (otra cámara, una videollamada…). Ciérrala y pulsa «Volver a intentarlo».';
+  else if(n==='NotFoundError'||n==='OverconstrainedError') text='No encontramos ninguna cámara en este móvil. Usa uno de los botones de abajo.';
+  else text='No hemos podido abrir la cámara. Pulsa «Volver a intentarlo» o usa uno de los botones de abajo.';
+  const ver=(navigator.userAgent.match(/(?:Chrome|SamsungBrowser|Firefox|EdgA|OPR)\/(\d+)/)||[])[1]||'';
+  return {text,detail:`Detalle para La Funda: ${n}${m?' · '+m.slice(0,60):''} · permiso de la web: ${st} · ${br}${ver?' '+ver:''} · ${inst?'instalada':'en el navegador'}`};
 }
 window.addEventListener('hashchange',camClose); window.addEventListener('popstate',camClose);
 document.addEventListener('visibilitychange',()=>{if(document.hidden) camClose();});
