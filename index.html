@@ -11,9 +11,6 @@
 <meta name="apple-mobile-web-app-title" content="La Funda">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -28,7 +25,7 @@
   --up:#157a3b; --down:#c0262c; --flat:#8a84a0;
   --page:#1a0a3b; --pocket:rgba(255,255,255,.05); --pocket-b:rgba(255,255,255,.16);
   --shadow:0 4px 12px rgba(43,18,87,.08); --shadow2:0 10px 24px rgba(43,18,87,.18);
-  --font:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   /* capa de oficio: escala de espacio, radios, movimiento y papeles de color que faltaban */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px;
   --r-sm:8px; --r-md:14px; --r-lg:20px; --r-pill:999px;
@@ -803,7 +800,7 @@ window.LF_EX={"date":"2026-11-20","cards":[{"id":"sv03.5-199","lang":"es","name"
 "use strict";
 /* ==================== LA FUNDA · APP ====================
    Una sola página, sin servidor. Todo lo de cada persona se guarda en su navegador. */
-const APPV='2.13 · 24 nov 2026';
+const APPV='2.14 · 26 nov 2026';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -930,6 +927,10 @@ const YT='https://www.youtube.com/@LAfunda2028';
    La forma de la curva (cuánto ha caído desde que salió, si lleva 3 meses quieta, el múltiplo del PSA 10) sale del estudio
    de La Funda y se enseña siempre en porcentaje. Sin conexión se usa el precio guardado de cada carta. */
 const HD=(window.LF_HIST&&window.LF_HIST.c)?window.LF_HIST:null;
+/* Precios Cardmarket no fiables: idProduct repetido en varias cartas o colección aún mal enlazada (Delta Reign). Se oculta el precio. */
+const CM_SETS_NOFIAR=['me06'];
+const CM_BAD=(()=>{const s=new Set(),g={}; if(!HD) return s; for(const id in HD.c){const e=HD.c[id]; if(e[10]) (g[e[10]]=g[e[10]]||[]).push(id); if(CM_SETS_NOFIAR.includes(e[6])) s.add(id);} for(const p in g) if(g[p].length>1) g[p].forEach(i=>s.add(i)); return s;})();
+const cmOk=id=>!CM_BAD.has(String(id||''))&&!CM_SETS_NOFIAR.some(x=>String(id||'').startsWith(x+'-'));
 const BASE_YM=2020*12;
 function hist(id){
   if(!HD||!HD.c[id]) return null;
@@ -939,7 +940,7 @@ function hist(id){
   const now=v[v.length-1], p0=v[0], min=Math.min(...v), iMin=s.indexOf(min), ago3=v.length>=4?v[v.length-4]:null;
   return {id,m0,s,p0,now,min,iMin,ago3,p10:p10||null,name,localId,img:img?'https://assets.tcgdex.net/en/'+img:'',setId,
     setName:(HD.sets[setId]||[])[0]||'',rel:(HD.sets[setId]||[])[1]||m0+'-15',
-    cm:{trend:cmT||null,avg30:cmA30||null,low:cmLow||null,updated:HD.cmDate||''},idProduct:idp||0,rarity:rarity||''};
+    cm:cmOk(id)?{trend:cmT||null,avg30:cmA30||null,low:cmLow||null,updated:HD.cmDate||''}:{trend:null,avg30:null,low:null,updated:''},idProduct:idp||0,rarity:rarity||''};
 }
 
 /* ---------- cajas (cajas-data.js) ---------- */
@@ -988,7 +989,7 @@ async function getSet(lang,id){
   const d=await getJSON(`${API}/${lang}/sets/${id}`); const s={name:d.name||'',releaseDate:d.releaseDate||''}; cacheSet(k,s); return s;
 }
 async function getCard(lang,id){
-  const k=lang+'/'+id, c=cacheGet(k); if(c) return c;
+  const k=lang+'/'+id, c=cacheGet(k); if(c){ if(!cmOk(c.id||id)) c.cm={trend:null,avg1:null,avg7:null,avg30:null,low:null,updated:''}; return c; }
   const d=await getJSON(`${API}/${lang}/cards/${id}`); const cm=(d.pricing||{}).cardmarket||{};
   const num=v=>typeof v==='number'&&v>0?v:null;
   const tpr=(d.pricing||{}).tcgplayer||{}; let tp=null;
@@ -996,6 +997,7 @@ async function getCard(lang,id){
   let tpId=null; for(const k in tpr){if(tpr[k]&&tpr[k].productId){tpId=tpr[k].productId;break;}}
   const slim={id:d.id,name:d.name||'',localId:d.localId||'',rarity:d.rarity||'',image:d.image||'',setId:(d.set||{}).id||'',setName:(d.set||{}).name||'',tp,tpId,
     cm:{trend:num(cm.trend)||num(cm['trend-holo']),avg1:num(cm.avg1)||num(cm['avg1-holo']),avg7:num(cm.avg7)||num(cm['avg7-holo']),avg30:num(cm.avg30)||num(cm['avg30-holo']),low:num(cm.low)||num(cm['low-holo']),updated:cm.updated||''}};
+  if(!cmOk(slim.id||id)) slim.cm={trend:null,avg1:null,avg7:null,avg30:null,low:null,updated:''};
   cacheSet(k,slim); return slim;
 }
 function rarityType(r){
@@ -1501,7 +1503,7 @@ function verdInner(j,item){
     <p class="why">${esc(j.why)}</p>
     ${j.max&&j.v!=='pasa'&&j.v!=='none'?`<div><span class="k">Precio orientativo</span><div class="max">${eurS(j.max)}</div></div>`:''}
     ${j.notes&&j.notes.length?`<ul class="checks small">${j.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:''}
-    <p class="tiny sem-note">Verde, amarillo o rojo según el precio y el momento de la carta. Es una sugerencia, no un consejo de inversión.</p>`;
+    <p class="tiny sem-note">Verde, amarillo o rojo según el precio y el momento de la carta. Es un dato orientativo, no un consejo de inversión.</p>`;
 }
 function tuneHTML(id,kind){
   const T=tuneOf(id), box=kind==='box';
@@ -1736,7 +1738,7 @@ function goBack(fallback){ if(_hist>1) history.back(); else go(fallback||'buscar
    - El correo es obligatorio para entrar; las casillas de correos y de anuncios son voluntarias y van sin marcar.
    - Se guarda en el móvil (lf-reg-v1) para no volver a preguntar, y se envía al destino configurado con la fecha y lo que se marcó.
    - El aviso de privacidad (#privacidad) se puede leer sin registrarse. */
-const REGKEY='lf-reg-v1', REGTXT='v1 · nov 2026', REMAIL=/^[^\s@<>"']{1,64}@[^\s@<>"']{1,180}\.[a-z]{2,24}$/i;
+const REGKEY='lf-reg-v1', REGTXT='v2 · nov 2026', REMAIL=/^[^\s@<>"']{1,64}@[^\s@<>"']{1,180}\.[a-z]{2,24}$/i;
 let REG=null;
 function regApply(c){
   REG=null; if(!c||typeof c!=='object') return;
@@ -1789,7 +1791,7 @@ function viewReg(){
       <button class="btn pri" type="submit" id="regB">Entrar</button>
       <div id="regMsg"></div>
     </form>
-    <p class="tiny">Responsable: ${esc(REG.who)}. Usamos tu correo para registrarte y escribirte sobre el servicio; lo demás, solo si marcas su casilla. Puedes darte de baja o pedir que lo borremos cuando quieras en <a href="mailto:${esc(REG.mail)}">${esc(REG.mail)}</a>. <a href="#privacidad">Aviso de privacidad</a>.</p>
+    <p class="tiny">Responsable: ${esc(REG.who)}. Usamos tu correo para registrarte y escribirte sobre el servicio; lo demás, solo si marcas su casilla. Puedes darte de baja o pedir que lo borremos cuando quieras en <a href="mailto:${esc(REG.mail)}">${esc(REG.mail)}</a>. <a href="#privacidad">Aviso legal y privacidad</a>.</p>
   </section>`;
   let busy=false;
   const err=(id,t)=>{const e=$(id); e.textContent=t||''; e.hidden=!t;};
@@ -1815,21 +1817,21 @@ function viewReg(){
   });
 }
 function viewPriv(){
-  header('Privacidad',{back:true,to:'inicio'});
+  header('Aviso legal y privacidad',{back:true,to:'inicio'});
   const R=REG, m=R?`<a href="mailto:${esc(R.mail)}">${esc(R.mail)}</a>`:'';
-  $('view').innerHTML=`<section class="card priv"><h2>Lo que se queda en tu móvil</h2>
+  $('view').innerHTML=`<section class="card priv"><h2>Aviso legal</h2><p class="small"><b>Titular.</b> Sergio Ramos Torres (España). <b>Contacto:</b> lafundacontacto2608@gmail.com.</p><p class="small"><b>Si nos escribes.</b> Tu mensaje a lafundacontacto2608@gmail.com se guarda en Gmail (Google) y lo ordenamos y contestamos con ayuda de una herramienta de IA (Claude, de Anthropic). Lo usamos solo para contestarte y lo borramos a los 12 meses.</p><p class="small">La Funda es una app gratuita e informativa sobre precios de cartas Pokémon. No está afiliada a Nintendo, The Pokémon Company, Game Freak ni Creatures; las marcas y las imágenes de las cartas son de sus dueños.</p></section><section class="card priv"><h2>Condiciones de la beta</h2><ul class="small"><li>Es una versión de prueba y gratis. Puede fallar, cambiar o cerrarse sin aviso.</li><li>Los precios son orientativos y vienen de servicios externos (TCGdex, que recoge precios de Cardmarket y TCGplayer). Pueden llegar tarde o estar mal.</li><li>No es asesoramiento financiero ni fiscal. Lo que hagas con tus cartas lo decides tú.</li><li>Es para uso personal. No copies ni revendas los datos de la app.</li><li>Dudas o fallos: lafundacontacto2608@gmail.com.</li></ul></section><section class="card priv"><h2>Lo que se queda en tu móvil</h2>
       <p class="small">Tu colección, tu scouting, tu lista, tus recordatorios y tus ajustes se guardan solo en este navegador. No salen de tu móvil. Puedes borrarlos en Herramientas → Ajustes → «Borrar todos mis datos».</p></section>
     <section class="card priv"><h2>Tu correo</h2>${R?`
       <p class="small"><b>Quién lo guarda.</b> ${esc(R.who)}. Contacto: ${m}.</p>
       <p class="small"><b>Qué guardamos.</b> Tu correo, la fecha en que te registraste y las casillas que marcaste.</p>
       <p class="small"><b>Para qué.</b> Para registrarte en La Funda y escribirte sobre el servicio.${R.correos?' Si marcaste su casilla, para enviarte correos con novedades.':''}${R.anuncios?' Si marcaste su casilla, para enseñarte anuncios de La Funda.':''}</p>
-      <p class="small"><b>Con qué permiso.</b> El registro, porque lo pides al entrar.${R.correos||R.anuncios?' Lo demás, solo con tu consentimiento, que puedes retirar cuando quieras.':''}</p>
-      <p class="small"><b>Con quién se comparte.</b> Con el servicio que guarda la lista de correos.${R.anuncios?' Si marcaste la casilla de anuncios, tu correo se envía cifrado a las plataformas de publicidad (Google, YouTube y redes sociales) para que puedan enseñarte nuestros anuncios.':''} No se vende a nadie.</p>
+      <p class="small"><b>Con qué permiso.</b> Tu consentimiento (artículo 6.1.a del RGPD): el registro, porque lo pides al entrar.${R.correos||R.anuncios?' Lo demás, solo con tu consentimiento, que puedes retirar cuando quieras.':''}</p>
+      <p class="small"><b>Con quién se comparte.</b> Con Brevo (Sendinblue SAS, Francia, dentro de la UE), que guarda la lista de correos por encargo nuestro.${R.anuncios?' Si marcaste la casilla de anuncios, tu correo se envía cifrado a las plataformas de publicidad (Google, YouTube y redes sociales) para que puedan enseñarte nuestros anuncios.':''} No se vende a nadie.</p>
       <p class="small"><b>Cuánto tiempo.</b> Hasta que te des de baja o pidas que lo borremos.</p>
       <p class="small"><b>Tus derechos.</b> Puedes pedir ver, corregir o borrar tus datos, oponerte a su uso o retirar un permiso escribiendo a ${m}. Si crees que no lo hemos hecho bien, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>`
       :'<p class="small">La app no te pide el correo ni ningún otro dato personal.</p>'}</section>
     <section class="card priv"><h2>Servicios externos y cookies</h2>
-      <p class="small">La app no usa cookies de publicidad ni de seguimiento. Para funcionar pide precios, imágenes de cartas, tipos de letra y miniaturas de vídeo a servicios externos, que reciben tu dirección IP como cualquier web que visitas.</p></section>
+      <p class="small">La app no usa cookies de publicidad ni de seguimiento. Para funcionar pide precios (TCGdex y, si pones tu clave, PokemonPriceTracker), el cambio de moneda (Frankfurter), imágenes de cartas y miniaturas de vídeo (YouTube) a servicios externos. Si usas el escáner de cartas, la primera vez descarga el lector de texto (Tesseract) de jsDelivr, una red de reparto de archivos con servidores en todo el mundo, también fuera de la UE. La app está alojada en GitHub Pages (GitHub, de Microsoft, EE. UU.). Estos servicios reciben tu dirección IP y datos técnicos del navegador (tipo de navegador y de móvil, idioma y qué archivo se pide), como cualquier web que visitas, solo para enviarte lo que pide la app. Base legal: nuestro interés legítimo en que la app funcione (art. 6.1.f del RGPD). No les mandamos tu correo, tu colección ni tus fotos: las fotos se leen en tu propio móvil.</p></section>
     <p class="note">Texto ${REGTXT}. Solo para mayores de 14 años.</p>`;
 }
 /* el bloque de «Tu registro» de Ajustes */
@@ -1837,7 +1839,7 @@ function regCard(){
   const yn=v=>v?'sí':'no';
   return `<section class="card"><h2>Tu registro y privacidad</h2>${REGME?`<p class="small">Registrado con <b>${esc(REGME.e)}</b>${REGME.d?' el '+fdate(REGME.d.slice(0,10)):''}. Correos de novedades: ${yn(REGME.correos)}. Anuncios: ${yn(REGME.anuncios)}.</p>
       ${REG?`<p class="small muted">Para cambiarlo, darte de baja o borrar tu correo de la lista, escribe a <a href="mailto:${esc(REG.mail)}">${esc(REG.mail)}</a>. Borrar los datos de este móvil no borra tu correo de la lista.</p>`:''}`:''}
-      <a class="btn out" href="#privacidad">Aviso de privacidad</a></section>`;
+      <a class="btn out" href="#privacidad">Aviso legal, condiciones y privacidad</a></section>`;
 }
 
 function route(){
@@ -1998,7 +2000,7 @@ function drawMkt(){
   const all=M.s, len=(MKR.find(r=>r[0]===rk)||[])[2], sr=len?all.slice(-len):all, last=all[all.length-1];
   const ch=last.v/sr[0].v-1, c3=last.v/all[Math.max(0,all.length-4)].v-1, y1=all.length>12?last.v/all[all.length-13].v-1:null;
   const mx=all.reduce((a,p)=>p.v>a.v?p:a,all[0]), dmx=last.v/mx.v-1;
-  const st=c3>0.03?'Ahora sube':c3<-0.03?'Ahora baja':'Ahora estable', lab=(MKR.find(r=>r[0]===rk)||[])[1];
+  const st=c3>0.03?'Sube en 3 meses':c3<-0.03?'Baja en 3 meses':'Estable en 3 meses', lab=(MKR.find(r=>r[0]===rk)||[])[1];
   el.innerHTML=`<div class="row" style="justify-content:space-between"><h2>Cómo está el mercado</h2><span class="pill-acc">${st}</span></div>
     <div class="mkt-big"><b class="${ch>=0?'up':'down'}">${sgn(ch)}</b><span>${rk==='todo'?'desde '+fmonth(sr[0].m):'en '+(rk==='1a'?'el último año':'los dos últimos años')}</span></div>
     <div class="chart" id="mktC"></div>
@@ -2079,7 +2081,7 @@ function tierRows(R){
   return `${R.rows.length?`<div class="list">${R.rows.map((r,i)=>row(r,i,false)).join('')}</div>`:''}
     ${near.length?`<p class="small tier-sub">${R.part?`<b>De las ${R.part} que hemos mirado hoy, ${R.rows.length?(R.rows.length===1?'una cumple':R.rows.length+' cumplen'):'ninguna cumple'} las dos cosas</b>${R.rows.length?'.':' (señal verde y subiendo).'}`:R.rows.length?(R.rows.length===1?'<b>Solo una cumple hoy las dos cosas.</b>':`<b>Solo ${R.rows.length} cumplen hoy las dos cosas.</b>`):'<b>Hoy ninguna cumple las dos cosas</b> (señal verde y subiendo).'} ${near.length===1?'La que más se acerca:':'Las que más se acercan:'}</p><div class="list">${near.map((r,i)=>row(r,i,true)).join('')}</div>`:''}
     ${R.old?`<div class="errbox" role="status"><b>No hemos podido comprobar los precios de hoy.</b><span class="small">Son los precios guardados del ${fdate(HD.cmDate)}; la subida es frente a su media de 30 días.</span><button class="btn out sm" type="button" id="tierRetry">Volver a intentarlo</button></div>`:''}
-    <p class="tiny">${R.rows.length?'Con número: cumplen las dos cosas, señal verde y subiendo. ':''}${near.length?'Con «~»: no las cumplen las dos, pero son las más cercanas; cada una lleva su señal y su cambio de verdad. ':''}Subida: la media de su última semana frente a la de su último mes. Se calcula una vez al día. Es una sugerencia, no un consejo de inversión.</p>`;
+    <p class="tiny">${R.rows.length?'Con número: cumplen las dos cosas, señal verde y subiendo. ':''}${near.length?'Con «~»: no las cumplen las dos, pero son las más cercanas; cada una lleva su señal y su cambio de verdad. ':''}Subida: la media de su última semana frente a la de su último mes. Se calcula una vez al día. Es un dato orientativo, no un consejo de inversión.</p>`;
 }
 function drawTiers(){
   const el=$('tiers'); if(!el) return; let k=lsGet0('lf-app-tier','s2'); const t=TIERS.find(x=>x.k===k)||TIERS[1];
@@ -2796,7 +2798,6 @@ let _delArm=0; function confirmDel(){ if(Date.now()-_delArm<4000) return true; _
 const CP=(()=>{
 const SKEY='lf-carp-v1', PRKEY='lf-carp-prices-v1', HIKEY='lf-carp-hist-v1', MKEY='lf-carp-mode';
 const COLORS=['#6B2BD9','#C2185B','#1E7F5C','#1F5FBF','#B7561C','#2B2B3A','#8A6D1A','#7A2FB5'];
-const EX=window.LF_EX||{cards:[],prices:{}};
 const eur2=new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
 const sgnE=v=>(v>=0?'+':'−')+eurS(Math.abs(v));
 const sgnP=v=>(v>=0?'+':'−')+Math.abs(Math.round(v*1000)/10).toLocaleString('es-ES')+' %';
@@ -2810,8 +2811,9 @@ const CAMSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const GRADE={raw:'Sin graduar',psa10:'Graduada, nota 10',graded:'Graduada, otra nota',sealed:'Precintada'};
 
 /* ---------- datos ---------- */
-function exampleBinder(){return {id:'ejemplo',name:'Mis joyas',color:'#6B2BD9',example:true,sort:'added',created:EX.date||today(),
-  cards:(EX.cards||[]).map(c=>({u:uid(),kind:'card',id:c.id,lang:c.lang,name:c.name,n:c.n,set:c.set,setId:c.setId,rarity:c.rarity,img:c.img,v:c.v,q:c.q,added:EX.date||today()}))};}
+/* ya no hay carpeta de ejemplo («Mis joyas»): si sigue sin tocar, se quita al abrir y no entra al recuperar una copia.
+   Si alguna de sus cartas lleva algo tuyo (lo que pagaste, una venta, una nota…), se queda como carpeta tuya */
+const noEx=bs=>bs.filter(b=>b&&!(b.example&&b.id==='ejemplo'&&!b.cards.some(c=>c.sold||+c.paid>0||+c.manual>0||c.note||c.date||(c.grade&&c.grade!=='raw')))).map(b=>{delete b.example; return b;});
 /* lo que viene de una copia (o de lo guardado) se limpia campo a campo antes de usarlo */
 function cleanCard(c){
   if(!c||typeof c!=='object') return null; const box=c.kind==='box', idp=Math.floor(S_.num(c.idProduct)), id=box?'cm'+idp:S_.id(c.id); if(box?!idp:!id) return null;
@@ -2829,8 +2831,8 @@ function cleanBinder(b){
 }
 function cleanHist(h){const r={}; if(h&&typeof h==='object') for(const k in h){if(!/^[\w.\-!?%|]{1,90}$/.test(k)||!Array.isArray(h[k])) continue; const a=h[k].filter(x=>Array.isArray(x)&&S_.date(x[0])&&S_.num(x[1])).map(x=>[S_.date(x[0]),S_.num(x[1])]); if(a.length) r[k]=a.slice(-400);} return r;}
 let ST=lsGet0(SKEY,null);
-if(!ST||!Array.isArray(ST.binders)) ST={v:2,binders:[exampleBinder()]};
-else ST.binders=ST.binders.map(cleanBinder).filter(Boolean);
+if(!ST||!Array.isArray(ST.binders)) ST={v:2,binders:[]};
+else ST.binders=noEx(ST.binders.map(cleanBinder));
 /* la colección de la versión anterior de la app (con lo que pagaste y lo vendido) pasa a la carpeta «Mi colección» */
 function fromOld(x){const box=x.kind==='box';
   return {u:x.uid||uid(),kind:box?'box':'card',id:x.id,idProduct:x.idProduct||0,type:x.type||'',lang:x.lang||'es',name:x.name||'',n:x.localId||'',set:x.setName||'',
@@ -2844,7 +2846,7 @@ function importOld(list){
 }
 if(!ST.oldDone){importOld(lsGet0(K.col,[])); ST.oldDone=1;}
 let PR=lsGet0(PRKEY,{});
-if(EX.prices) for(const id in EX.prices) if(!PR[id]){const p=EX.prices[id]; PR[id]={t:new Date((EX.date||today())+'T12:00:00').getTime(),b:p.b,r:p.r,a30:p.a30,a30r:null,v:{},upd:p.upd,ex:true};}
+for(const id in PR) if(PR[id]&&PR[id].ex) delete PR[id]; /* fuera los precios de ejemplo que traía «Mis joyas» (se piden de verdad al actualizar) */
 let HI=cleanHist(lsGet0(HIKEY,{}));
 /* las carpetas van primero: si no caben, se sacrifican cachés e historiales (lsSafe) antes de darlo por perdido */
 const save=()=>{const ok=lsSafe(SKEY,JSON.stringify(ST)); if(!ok) toast('No queda sitio en este móvil para guardar. Descarga una copia en Ajustes y libera espacio.'); return ok;};
@@ -2881,6 +2883,7 @@ function record(c,price,date){
   if(a.length>90){const t=thinSeries(a,p=>p[0]).slice(-180); a.length=0; t.forEach(x=>a.push(x));}
 }
 async function fetchPrice(id){
+  if(!cmOk(id)) return null;
   for(let i=0;i<3;i++){
     try{
       const d=await getJSON(`${API}/en/cards/${encodeURIComponent(id)}`), cm=(d.pricing||{}).cardmarket||{}, v={};
@@ -3784,11 +3787,10 @@ function backup(){return {binders:ST.binders,hist:HI};}
 /* recuperar una copia. «replace»: lo de la copia sustituye a lo que hay. «merge»: se junta sin repetir (misma carpeta = mismo id; misma carta = mismo u) */
 function restore(d,mode){
   if(!d||!Array.isArray(d.binders)) return 0;
-  const inc=d.binders.map(cleanBinder).filter(Boolean); if(!inc.length&&mode!=='replace') return 0;
+  const inc=noEx(d.binders.map(cleanBinder)); if(!inc.length&&mode!=='replace') return 0;
   let nb=0;
-  if(mode==='replace'){ST.binders=inc.length?inc:[exampleBinder()]; HI=cleanHist(d.hist); nb=inc.length;}
+  if(mode==='replace'){ST.binders=inc; HI=cleanHist(d.hist); nb=inc.length;}
   else{
-    if(ST.binders.length===1&&ST.binders[0].example&&inc.some(b=>!b.example)) ST.binders=[];
     const us=new Set(); ST.binders.forEach(b=>b.cards.forEach(c=>us.add(c.u)));
     inc.forEach(b=>{const cur=binderOf(b.id);
       if(cur){const add=b.cards.filter(c=>!us.has(c.u)); add.forEach(c=>{cur.cards.push(c); us.add(c.u);}); if(add.length) nb++;}
@@ -3798,8 +3800,8 @@ function restore(d,mode){
   tidyH(false); save(); saveH(); refresh(false); return nb;
 }
 const hasData=()=>own().some(b=>b.cards.length)||own().length>0||REAL.items.length>0;
-function restoreOld(list){const n=importOld(list); if(ST.binders.length>1){const e=ST.binders.find(b=>b.example&&b.id==='ejemplo'); if(e&&n) ST.binders=ST.binders.filter(b=>b!==e);} save(); refresh(false); return n;}
-function reset(){ST={v:2,binders:[exampleBinder()],oldDone:1}; HI={}; save(); saveH();}
+function restoreOld(list){const n=importOld(list); save(); refresh(false); return n;}
+function reset(){ST={v:2,binders:[],oldDone:1}; HI={}; save(); saveH();}
 /* guarda de golpe una lista de cartas en una carpeta con ese nombre (la crea si no existe) y devuelve su id; no repite las que ya están */
 function addMany(name,list){
   let b=ST.binders.find(x=>!x.example&&x.name===name), made=false;
@@ -3821,7 +3823,7 @@ function viewMore(){
   $('view').innerHTML=`<div class="tools"><a class="tool" href="#lista"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></span><b>Mi lista y recordatorios</b>${alerts().length?`<span class="pro">${alerts().length}</span>`:''}</a>${TOOLS.map(([k,n])=>`<a class="tool" href="#tool/${k}"><span class="ic">${toolIcon(k==='ajustes'?'ajustes':k)}</span><b>${n}</b></a>`).join('')}</div>
     <section class="card dark"><h2>Radar La Funda</h2><ul class="checks small" style="color:var(--brand-mut)"><li>El informe de cada semana con las señales que cambian</li><li>Avisos al momento en tu móvil, sin abrir la app</li><li>Cartas que pasan a verde</li></ul>
       <span class="pill-acc" style="align-self:flex-start">Próximamente</span></section>
-    <p class="note">App no oficial de La Funda. Pokémon y las imágenes de las cartas son propiedad de The Pokémon Company, Nintendo, Game Freak y Creatures; La Funda no tiene relación con ellos. Herramienta informativa: no es asesoramiento financiero ni fiscal.</p>`;
+    <p class="note">App no oficial de La Funda. Pokémon y las imágenes de las cartas son propiedad de The Pokémon Company, Nintendo, Game Freak y Creatures; La Funda no está afiliada a ellos. Herramienta informativa: no es asesoramiento financiero ni fiscal. <a href="#privacidad">Aviso legal, condiciones y privacidad</a>.</p>`;
 }
 function viewTool(k,p){
   const T={tengo:toolTengo,gano:toolGano,graduo:toolGraduo,abro:toolAbro,termo:toolTermo,lanz:toolLanz,falsas:toolFalsas,ajustes:toolAjustes}[k];
