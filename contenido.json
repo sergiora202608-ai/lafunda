@@ -1,6 +1,6 @@
 {
  "_como_se_usa": "Edita este fichero para cambiar los eventos, las noticias y los vídeos de Inicio sin tocar la app. Fechas en formato AAAA-MM-DD. region: «Internacional» o «Japón». Guarda y vuelve a subir la carpeta a Netlify.",
- "actualizado": "2026-11-24",
+ "actualizado": "2026-11-26",
  "registro": {
   "_como_se_usa": "Pantalla de registro al entrar (correo obligatorio). «activo»: false = apagado · \"prueba\" = solo la ve quien abra la app con ?registro=prueba al final de la dirección (para probar que los correos llegan, sin molestar a nadie) · true = para todos. No aparece hasta que estén rellenos «responsable» (nombre que se ve en público), «contacto» (correo para bajas, se ve en público) y «destino.url». IMPORTANTE: con la app en GitHub Pages el destino tiene que ser un servicio de formularios externo (una dirección https://…, por ejemplo el formulario de Brevo). El destino «/» solo sirve en Netlify; en GitHub Pages se ignora, porque no recoge formularios. Prueba siempre con \"prueba\" antes de poner true. «casillas»: pon false para quitar una casilla voluntaria. «destino.campos» son los nombres de los campos del formulario de destino; «fijos» son campos que se envían siempre igual.",
   "activo": false,
@@ -25,6 +25,102 @@
     "locale": "es"
    }
   }
+ },
+ "cartera": {
+  "_como_se_usa": "La cartera de Sergio (carpeta de La Funda en Scouting, solo lectura). «activo»: false = apagada. «fecha» = día de salida (los precios de salida son de ese día). «subtitulo»: {fecha} se cambia por el día de salida (dd/mm/aaaa). «aviso»: {fecha} se cambia por el día de los precios de hoy; si Sergio tiene alguna de las cartas, se añade aquí «Tengo N de estas cartas». «provisional»: true pone la marca «Provisional». Cada carta: «id» de TCGdex, «idioma» (es/en), «nombre», «coleccion», «precio» de salida en € (tendencia Cardmarket) y «motivo» (lo que muestran los datos, sin palabras de predicción ni de compra). «comparador»: contra qué se compara («cambio_pct» = variación en % desde la fecha de salida, «fecha» = hasta qué día). Para cambiar la lista o el comparador solo se toca este bloque.",
+  "activo": true,
+  "provisional": false,
+  "titulo": "La cartera de Sergio",
+  "subtitulo": "10 cartas que he elegido con los datos de La Funda. El reto: batir al mercado (las 50 cartas más caras de las mismas colecciones). Así va desde el {fecha}.",
+  "fecha": "2026-11-25",
+  "aviso": "Es mi cartera de seguimiento, no una recomendación de compra ni consejo de inversión. Los precios pueden bajar. Precios orientativos de Cardmarket (vía TCGdex) a {fecha}.",
+  "comparador": {
+   "nombre": "Mercado (las 50 cartas más caras de las mismas colecciones)",
+   "cambio_pct": 0,
+   "fecha": "2026-11-25"
+  },
+  "cartas": [
+   {
+    "id": "sv10-242",
+    "idioma": "es",
+    "nombre": "Crobat ex del Team Rocket",
+    "coleccion": "Rivales Predestinados",
+    "precio": 19.83,
+    "motivo": "+29,0 % a 30 días (15,37 € → 19,83 €); media a 7 días 17,33 €"
+   },
+   {
+    "id": "sv10.5w-091",
+    "idioma": "es",
+    "nombre": "Deerling",
+    "coleccion": "Llama Blanca",
+    "precio": 17.49,
+    "motivo": "+20,5 % a 30 días (14,52 € → 17,49 €); media a 7 días 15,85 €"
+   },
+   {
+    "id": "sv08.5-144",
+    "idioma": "es",
+    "nombre": "Leafeon ex",
+    "coleccion": "Evoluciones Prismáticas",
+    "precio": 276.99,
+    "motivo": "+19,8 % a 30 días (231,27 € → 276,99 €); media a 7 días 268,54 €"
+   },
+   {
+    "id": "sv10.5w-155",
+    "idioma": "es",
+    "nombre": "Herdier",
+    "coleccion": "Llama Blanca",
+    "precio": 12.77,
+    "motivo": "+17,4 % a 30 días (10,88 € → 12,77 €); media a 7 días 10,93 €"
+   },
+   {
+    "id": "me03-094",
+    "idioma": "es",
+    "nombre": "Clefairy",
+    "coleccion": "Equilibrio Perfecto",
+    "precio": 18.39,
+    "motivo": "+17,1 % a 30 días (15,71 € → 18,39 €); media a 7 días 16,94 €"
+   },
+   {
+    "id": "sv10-233",
+    "idioma": "es",
+    "nombre": "Nidoking ex del Team Rocket",
+    "coleccion": "Rivales Predestinados",
+    "precio": 119.66,
+    "motivo": "+13,5 % a 30 días (105,47 € → 119,66 €); media a 7 días 113,30 €"
+   },
+   {
+    "id": "sv10.5w-166",
+    "idioma": "es",
+    "nombre": "Reshiram ex",
+    "coleccion": "Llama Blanca",
+    "precio": 229.13,
+    "motivo": "+12,6 % a 30 días (203,57 € → 229,13 €); media a 7 días 215,16 €"
+   },
+   {
+    "id": "me03-119",
+    "idioma": "es",
+    "nombre": "Mega-Clefable ex",
+    "coleccion": "Equilibrio Perfecto",
+    "precio": 38.53,
+    "motivo": "+11,3 % a 30 días (34,62 € → 38,53 €); media a 7 días 35,29 €"
+   },
+   {
+    "id": "sv10.5w-100",
+    "idioma": "es",
+    "nombre": "Simisear",
+    "coleccion": "Llama Blanca",
+    "precio": 11.48,
+    "motivo": "+10,5 % a 30 días (10,39 € → 11,48 €); media a 7 días 10,71 €"
+   },
+   {
+    "id": "sv10.5b-101",
+    "idioma": "es",
+    "nombre": "Panpour",
+    "coleccion": "Fulgor Negro",
+    "precio": 11.17,
+    "motivo": "+10,4 % a 30 días (10,12 € → 11,17 €); media a 7 días 10,33 €"
+   }
+  ]
  },
  "eventos": [
   {
