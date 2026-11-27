@@ -3940,7 +3940,8 @@ function bkFit(b,pool){
   return k;
 }
 function bkBuild(b,pool,banned,want){
-  const n=want||bkCount(b), split=bkSplit(n), picks=[], keys=new Set(), sets={}; let sum=0;
+  /* con número elegido: como mucho las que caben hoy con estas cartas (si el precio de hoy sube, caben menos) */
+  const n=want?Math.min(want,bkFit(b,pool.filter(x=>!banned.has(x.c.id)))):bkCount(b), split=bkSplit(Math.max(1,n)), picks=[], keys=new Set(), sets={}; let sum=0;
   const free=x=>!banned.has(x.c.id)&&!picks.includes(x)&&!keys.has(bkKey(x.c.name))&&(sets[x.c.setId]||0)<2;
   const take=x=>{picks.push(x); keys.add(bkKey(x.c.name)); sets[x.c.setId]=(sets[x.c.setId]||0)+1; sum+=bkP(x);};
   const byScore=(x,y)=>bkScore(y)-bkScore(x)||bkP(y)-bkP(x);
@@ -3955,8 +3956,8 @@ function bkBuild(b,pool,banned,want){
     const reserve=r=>{if(r<=0) return 0; const ks=new Set(keys), st=Object.assign({},sets); let s=0, c=0;
       for(const x of asc){if(c>=r) break; const kk=bkKey(x.c.name); if(banned.has(x.c.id)||picks.includes(x)||ks.has(kk)||(st[x.c.setId]||0)>=2) continue; ks.add(kk); st[x.c.setId]=(st[x.c.setId]||0)+1; s+=bkP(x); c++;}
       return c<r?Infinity:s;};
-    for(let i=0;i<want;i++){
-      const room=b-sum-reserve(want-i-1); if(!(room>0)) break;
+    for(let i=0;i<n;i++){
+      const room=b-sum-reserve(n-i-1); if(!(room>0)) break;
       const target=Math.min(b*split[i]+carry,room); let x=best(target,target*0.45); if(!x) x=best(room,0); if(!x) break;
       take(x); carry=Math.max(0,target-bkP(x));
     }
@@ -3973,8 +3974,10 @@ const bkLive=async x=>{try{const c0=await getCard('en',x.c.id); let rel=''; try{
 /* arma la cesta y comprueba cada carta con el precio de hoy; la que ya no está en verde o no cabe, se cambia */
 async function bkPlan(b,skip,want){
   const pl=bkPool(b).map(bkCopy), banned=new Set(skip||[]), checked=new Set(); let live=true;
-  for(let round=0;round<6;round++){
-    const todo=bkBuild(b,pl,banned,want).filter(x=>!checked.has(x.c.id)); if(!todo.length) break;
+  /* con número de cartas elegido se comprueban también las más baratas: son las que guardan sitio a las demás (F25) */
+  const cheapest=()=>{if(!want) return []; const out=[], ks=new Set(); for(const x of pl.slice().sort((x,y)=>bkP(x)-bkP(y))){if(banned.has(x.c.id)) continue; const k=bkKey(x.c.name); if(ks.has(k)) continue; ks.add(k); out.push(x); if(out.length>=want+2) break;} return out;};
+  for(let round=0;round<(want?10:6);round++){
+    const todo=[...new Set([...bkBuild(b,pl,banned,want),...cheapest()])].filter(x=>!checked.has(x.c.id)); if(!todo.length) break;
     const res=await pool_(todo,4,bkLive);
     if(res.every(r=>r.err)){live=false; break;}
     res.forEach(r=>{checked.add(r.x.c.id);
@@ -3982,7 +3985,7 @@ async function bkPlan(b,skip,want){
       else{r.x.c.cm=r.c0.cm; r.x.j=r.j; r.x.live=true;}});
   }
   /* con conexión solo quedan las comprobadas hoy: así la suma nunca pasa del presupuesto con el precio de hoy */
-  let picks=bkBuild(b,pl,banned,want); if(live) picks=picks.filter(x=>x.live);
+  let picks; if(live&&want) picks=bkBuild(b,pl.filter(x=>x.live),banned,want); else{picks=bkBuild(b,pl,banned,want); if(live) picks=picks.filter(x=>x.live);}
   return {picks,live:live&&picks.length>0,total:picks.reduce((a,x)=>a+bkP(x),0),pool:pl.length};
 }
 /* ---- para lo que sobra: las que más se acercan a la señal verde (nunca las de señal roja) ---- */
@@ -4060,14 +4063,16 @@ function toolTengo(arg){
     if(nv!==''&&!(Number.isInteger(n0)&&n0>=1&&n0<=BK_MAX)){seq++; $('tr').innerHTML='<p class="small" role="alert" style="color:var(--bad);font-weight:700">Pon de 1 a '+BK_MAX+' cartas, o déjalo vacío para que salgan las que encajen.</p>'; return;}
     if(!alt) tried=[]; const my=++seq, all=bkPool(b).sort((x,y)=>y.c.cm.trend-x.c.cm.trend);
     /* si la combinación no encaja, se avisa con los datos y se hace lo más cercano a lo que ha pedido */
-    let want=n0, note=null;
+    let want=n0, note=null, over=null;
     if(n0&&all.length){const fit=bkFit(b,all), auto=bkCount(b), cheap=Math.min(...all.map(bkP));
-      if(n0>fit){want=fit; note={t:`con ${eurS(b)} no caben ${n0} cartas con señal verde sin repetir Pokémon: la más barata que encaja hoy ronda los ${eurS(cheap)}. Caben ${fit===1?'1 carta':'como mucho '+fit}, y este es el plan con ${fit===1?'una':fit}.`};}
+      if(n0>fit){want=fit; over={cheap};}
       else if(n0<auto) note={t:`con ${eurS(b)} el plan normal reparte el dinero en ${auto} cartas o más. Si quieres ${n0===1?'solo una':'solo '+n0}, aquí ${n0===1?'la tienes':'las tienes'}.`, btn:`Ver el reparto normal`};}
     $('tr').innerHTML='<section class="card" role="status"><b>Montando tu plan…</b><p class="small muted">Elegimos las cartas y comprobamos su precio y su señal de hoy.</p><div class="sk" style="height:120px"></div></section>';
     let P=null; if(all.length){try{P=await bkPlan(b,tried,want);}catch(e){P=null;} if(my!==seq||!$('tr')) return;
       if(P&&!P.picks.length&&alt){tried=[]; toast('No hay más combinaciones: volvemos a la primera'); try{P=await bkPlan(b,[],want);}catch(e){P=null;} if(my!==seq||!$('tr')) return;}}
-    if(P&&want&&P.picks.length&&P.picks.length<want&&!(note&&n0>want)) note={t:`has pedido ${want} cartas y hoy salen ${P.picks.length} que cumplen todo con ${eurS(b)}.`};
+    const M=P&&P.picks.length?P.picks.length:0;
+    if(over&&M) note={t:`con ${eurS(b)} no caben ${n0} cartas con señal verde sin repetir Pokémon: la más barata que encaja hoy ronda los ${eurS(P.live?Math.min(...P.picks.map(bkP)):over.cheap)}. Hoy ${M===1?'cabe 1':'caben '+M}, y este es el plan con ${M===1?'una':M}.`};
+    else if(n0&&M&&M<n0) note={t:`has pedido ${n0} cartas y hoy ${M===1?'sale 1 que cumple':'salen '+M+' que cumplen'} todo con ${eurS(b)}.`};
     const has=!!(P&&P.picks.length), left=has?b-P.total:b, online=!P||P.live||!P.picks.length;
     /* si sobra una parte que se nota (15 % o más y al menos 20 €), o no hay cesta, se enseñan las que más se acercan */
     let N=[]; if(!has||(left>=20&&left>=b*0.15)){try{N=await bkNear(left,has?P.picks:[],has?P.live:online);}catch(e){N=[];} if(my!==seq||!$('tr')) return;}
