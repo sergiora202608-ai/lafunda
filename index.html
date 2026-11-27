@@ -339,6 +339,15 @@ nav.tabs a[aria-current="page"] svg{box-sizing:border-box;background:var(--bg2);
 nav.tabs{padding-left:4px;padding-right:4px}
 nav.tabs a{font-size:10.5px;letter-spacing:-.01em}
 nav.tabs a[aria-current="page"] svg{width:48px;padding:3px 12px}
+/* ===== barra inferior de 6 secciones (con el Planificador) ===== */
+nav.tabs{padding-left:2px;padding-right:2px}
+nav.tabs a{font-size:9.5px;letter-spacing:-.02em}
+nav.tabs a[aria-current="page"] svg{width:42px;padding:3px 9px}
+@media (max-width:380px){nav.tabs a[href]{font-size:9px}}
+@media (max-width:350px){nav.tabs a[href]{font-size:8px;letter-spacing:-.03em}}
+/* ===== Planificador ===== */
+#plNote{border-left:4px solid var(--brand2)}
+#plNote .btn{margin-top:10px}
 /* ===== Buscar: filtros ===== */
 .fbar{display:flex;flex-direction:column;gap:8px}
 .fbar .frow{display:flex;gap:8px;align-items:center}
@@ -789,6 +798,7 @@ body.cam-on{overflow:hidden}
   <a href="#buscar" data-tab="buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>Buscar</a>
   <a href="#coleccion" data-tab="coleccion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="4" y="6" width="12" height="15" rx="2"/><path d="M8 3h10a2 2 0 0 1 2 2v13"/></svg>Mi colección</a>
   <a href="#scouting" data-tab="scouting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M2.5 10.5c3 1.4 6.2 2 9.5 2s6.5-.6 9.5-2"/><path d="M6 10.6 7.6 4.8c.2-.8 1-1.2 1.8-1l2.6.7 2.6-.7c.8-.2 1.6.2 1.8 1L18 10.6"/><circle cx="7.6" cy="17" r="3.2"/><circle cx="16.4" cy="17" r="3.2"/><path d="M10.8 16.6c.8-.6 1.6-.6 2.4 0"/></svg>Scouting</a>
+  <a href="#planificador" data-tab="planificador"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 7h18v12H3z M16 13h3 M3 7l3-3h12l3 3"/></svg>Planificador</a>
   <a href="#mas" data-tab="mas" style="position:relative"><span class="dot" hidden style="position:absolute;top:0;right:22px;width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 0 2px var(--surface)"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Herramientas</a>
 </nav>
 <div id="sheet" hidden></div>
@@ -1738,7 +1748,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('sheet').hidden) closeSheet();});
 
 /* ---------- rutas ---------- */
-const TABS={inicio:1,buscar:1,coleccion:1,scouting:1,mas:1};
+const TABS={inicio:1,buscar:1,coleccion:1,scouting:1,planificador:1,mas:1};
 let _hist=0;
 function go(h){ if(_popIgn){_afterPop=h; return;} if(location.hash==='#'+h) route(); else {location.hash=h;} }
 function goBack(fallback){ if(_hist>1) history.back(); else go(fallback||'buscar'); }
@@ -1854,6 +1864,7 @@ function regCard(){
 function route(){
   let h; try{h=decodeURIComponent(location.hash.slice(1))||'inicio';}catch(e){h='inicio'; try{history.replaceState(null,'','#inicio');}catch(e2){}}
   const [r,...p]=h.split('/');
+  if(r==='tool'&&p[0]==='tengo'){try{history.replaceState(null,'','#planificador'+(+p[1]>0?'/'+(+p[1]):''));}catch(e){} if(location.hash.startsWith('#planificador')) return route();}
   const tab=TABS[r]?r:(r==='carta'||r==='caja')?'buscar':(r==='tool')?'mas':(r==='carpeta')?'scouting':(r==='valorar')?'coleccion':(r==='lista'||r==='privacidad')?'mas':'inicio';
   document.querySelectorAll('nav.tabs a').forEach(a=>{if(a.dataset.tab===tab) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');});
   closeSheet(); window.scrollTo(0,0);
@@ -1867,7 +1878,7 @@ function route(){
     if(r==='tool') return viewTool(p[0],p.slice(1));
     if(r==='carpeta') return CP.binder(p.join('/'));
     if(r==='valorar'){go('coleccion'); return;}
-    ({inicio:viewHome,lista:viewList,buscar:viewSearch,coleccion:()=>CP.col(p[0]),scouting:()=>CP.scout(p[0]),mas:viewMore}[r]||viewHome)();
+    ({inicio:viewHome,lista:viewList,buscar:viewSearch,coleccion:()=>CP.col(p[0]),scouting:()=>CP.scout(p[0]),planificador:()=>toolTengo(p[0]||''),mas:viewMore}[r]||viewHome)();
   }catch(e){console.error(e); v.innerHTML=`<div class="empty">Algo ha fallado al abrir esta pantalla. <a class="btn ghost sm" href="#inicio">Volver al inicio</a></div>`;}
 }
 window.addEventListener('hashchange',()=>{_hist++; route();});
@@ -2148,7 +2159,7 @@ function videosHTML(){
 function fillHoy(){const T=THERMO, el=$('mktHoy'); if(!T||!el) return; const t=thermoText(T);
   el.innerHTML=`<span class="big ${T.med>0.02?'up':T.med<-0.02?'down':''}">${(T.med>=0?'+':'−')+Math.abs(Math.round(T.med*100))} %</span><span class="small"><b>Hoy: ${t.title.toLowerCase()}.</b> ${T.up} de ${T.rows.length} cartas de referencia suben y ${T.down} bajan frente a su media de 30 días. <a href="#tool/termo">Ver cuáles</a></span>`;}
 function viewHome(){
-  header('',{right:`<a class="pillbtn" href="#tool/tengo">Tengo X €</a>`});
+  header('');
   const d0=new Date(Date.now()-10*864e5).toISOString().slice(0,10), coming=LAUNCHES.some(l=>l.d>=today()), nx=coming?LAUNCHES.filter(l=>l.d>=d0).slice(0,4):LAUNCHES.slice(-2);
   $('view').innerHTML=`
     <section class="card">${videosHTML()}</section>
@@ -3869,7 +3880,7 @@ return {home,col,scout,binder,addMany,refresh,addRef,count,homeCard,backup,resto
 })();
 
 /* ==================== HERRAMIENTAS ==================== */
-const TOOLS=[['tengo','Tengo X €: mi plan',''],['gano','¿Cuánto gano si la vendo?',''],['graduo','¿Me compensa graduar?',''],['abro','¿La abro o la guardo?',''],
+const TOOLS=[['gano','¿Cuánto gano si la vendo?',''],['graduo','¿Me compensa graduar?',''],['abro','¿La abro o la guardo?',''],
   ['termo','Termómetro del mercado',''],['lanz','Lanzamientos',''],['falsas','Cómo detectar falsas',''],['ajustes','Ajustes y copia de seguridad','']];
 function viewMore(){
   header('Herramientas');
@@ -3920,8 +3931,16 @@ function bkPool(b){
   const out=[]; for(const x of exploreCards().items){const p=x.c.cm.trend; if(!p||p>b) continue; const j=x.j; if(j.v==='compra'&&j.q1&&j.q2&&j.q3) out.push(x);}
   return out;
 }
-function bkBuild(b,pool,banned){
-  const n=bkCount(b), split=BK_SPLIT[n], picks=[], keys=new Set(), sets={}; let sum=0;
+/* reparto para un número de cartas: hasta 6 el de siempre; con más, una principal y el resto cada vez más pequeñas */
+const bkSplit=k=>{if(BK_SPLIT[k]) return BK_SPLIT[k]; const w=Array.from({length:k},(_,i)=>1+(k-1-i)*0.15), s=w.reduce((a,x)=>a+x,0); return w.map(x=>x/s);};
+/* cuántas cartas distintas caben como mucho: las más baratas, sin repetir Pokémon y como mucho 2 de la misma colección */
+function bkFit(b,pool){
+  const asc=pool.slice().sort((x,y)=>bkP(x)-bkP(y)), keys=new Set(), sets={}; let sum=0, k=0;
+  for(const x of asc){const kk=bkKey(x.c.name); if(keys.has(kk)||(sets[x.c.setId]||0)>=2) continue; if(sum+bkP(x)>b) break; keys.add(kk); sets[x.c.setId]=(sets[x.c.setId]||0)+1; sum+=bkP(x); k++; if(k>=BK_MAX) break;}
+  return k;
+}
+function bkBuild(b,pool,banned,want){
+  const n=want||bkCount(b), split=bkSplit(n), picks=[], keys=new Set(), sets={}; let sum=0;
   const free=x=>!banned.has(x.c.id)&&!picks.includes(x)&&!keys.has(bkKey(x.c.name))&&(sets[x.c.setId]||0)<2;
   const take=x=>{picks.push(x); keys.add(bkKey(x.c.name)); sets[x.c.setId]=(sets[x.c.setId]||0)+1; sum+=bkP(x);};
   const byScore=(x,y)=>bkScore(y)-bkScore(x)||bkP(y)-bkP(x);
@@ -3930,6 +3949,19 @@ function bkBuild(b,pool,banned){
     const inR=c.filter(x=>bkP(x)>=min); if(inR.length) return inR.sort(byScore)[0];
     const top=Math.max(...c.map(bkP)); return c.filter(x=>bkP(x)>=top*0.75).sort(byScore)[0];};
   let carry=0;
+  if(want){
+    /* número de cartas elegido: en cada hueco se deja dinero para las que faltan (las más baratas que quedan libres) */
+    const asc=pool.slice().sort((x,y)=>bkP(x)-bkP(y));
+    const reserve=r=>{if(r<=0) return 0; const ks=new Set(keys), st=Object.assign({},sets); let s=0, c=0;
+      for(const x of asc){if(c>=r) break; const kk=bkKey(x.c.name); if(banned.has(x.c.id)||picks.includes(x)||ks.has(kk)||(st[x.c.setId]||0)>=2) continue; ks.add(kk); st[x.c.setId]=(st[x.c.setId]||0)+1; s+=bkP(x); c++;}
+      return c<r?Infinity:s;};
+    for(let i=0;i<want;i++){
+      const room=b-sum-reserve(want-i-1); if(!(room>0)) break;
+      const target=Math.min(b*split[i]+carry,room); let x=best(target,target*0.45); if(!x) x=best(room,0); if(!x) break;
+      take(x); carry=Math.max(0,target-bkP(x));
+    }
+    return picks.sort((x,y)=>bkP(y)-bkP(x));
+  }
   split.forEach(f=>{const target=b*f+carry, x=best(target,target*0.45); if(!x){carry=target; return;} take(x); carry=target-bkP(x);});
   /* con lo que sobra entran más cartas mientras quepan */
   while(picks.length<BK_MAX){const left=b-sum; if(left<3) break; const x=best(left,left*0.35); if(!x) break; take(x);}
@@ -3939,10 +3971,10 @@ const pool_=(list,n,fn)=>pool(list,n,fn);
 const bkLive=async x=>{try{const c0=await getCard('en',x.c.id); let rel=''; try{rel=(await getSet('en',c0.setId)).releaseDate||'';}catch(e){} if(!rel) rel=x.c.releaseDate||'';
   return {x,c0,j:judgeCard(Object.assign({},c0,{releaseDate:rel}),rel)};}catch(e){return {x,err:true};}};
 /* arma la cesta y comprueba cada carta con el precio de hoy; la que ya no está en verde o no cabe, se cambia */
-async function bkPlan(b,skip){
+async function bkPlan(b,skip,want){
   const pl=bkPool(b).map(bkCopy), banned=new Set(skip||[]), checked=new Set(); let live=true;
   for(let round=0;round<6;round++){
-    const todo=bkBuild(b,pl,banned).filter(x=>!checked.has(x.c.id)); if(!todo.length) break;
+    const todo=bkBuild(b,pl,banned,want).filter(x=>!checked.has(x.c.id)); if(!todo.length) break;
     const res=await pool_(todo,4,bkLive);
     if(res.every(r=>r.err)){live=false; break;}
     res.forEach(r=>{checked.add(r.x.c.id);
@@ -3950,7 +3982,7 @@ async function bkPlan(b,skip){
       else{r.x.c.cm=r.c0.cm; r.x.j=r.j; r.x.live=true;}});
   }
   /* con conexión solo quedan las comprobadas hoy: así la suma nunca pasa del presupuesto con el precio de hoy */
-  let picks=bkBuild(b,pl,banned); if(live) picks=picks.filter(x=>x.live);
+  let picks=bkBuild(b,pl,banned,want); if(live) picks=picks.filter(x=>x.live);
   return {picks,live:live&&picks.length>0,total:picks.reduce((a,x)=>a+bkP(x),0),pool:pl.length};
 }
 /* ---- para lo que sobra: las que más se acercan a la señal verde (nunca las de señal roja) ---- */
@@ -3985,10 +4017,14 @@ function bkWhy(x){
   return out.join(' · ');
 }
 function toolTengo(arg){
-  header('Tengo X €: mi plan',{back:true});
-  $('view').innerHTML=`<p class="small muted">Dinos cuánto tienes y te montamos un plan: una cesta de cartas con señal verde para repartir ese dinero, sin repetir Pokémon.</p>
-    <form class="searchrow" id="tf" novalidate><input class="inp" id="tb" type="number" inputmode="decimal" autocomplete="off" enterkeyhint="done" min="1" max="100000" step="1" placeholder="Tu presupuesto en €" aria-label="Presupuesto en euros"><button class="btn pri" type="submit">Hacer mi plan</button></form>
-    <div class="sugg"><span>Prueba:</span>${[20,50,100,300,1000].map(v=>`<button type="button" data-b="${v}">${v} €</button>`).join('')}</div><div id="tr"></div>`;
+  header('Planificador');
+  $('view').innerHTML=`<p class="small muted">Dinos cuánto tienes y cuántas cartas quieres, y te montamos un plan: una cesta de cartas con señal verde para repartir ese dinero, sin repetir Pokémon.</p>
+    <form id="tf" novalidate><div class="fields">
+      <label class="f">¿Cuánto dinero tienes? (€)<input class="inp" id="tb" type="number" inputmode="decimal" autocomplete="off" enterkeyhint="next" min="1" max="100000" step="1" placeholder="Tu presupuesto en €"></label>
+      <div class="sugg"><span>Prueba:</span>${[20,50,100,300,1000].map(v=>`<button type="button" data-b="${v}">${v} €</button>`).join('')}</div>
+      <label class="f">¿Cuántas cartas quieres?<input class="inp" id="tn" type="number" inputmode="numeric" autocomplete="off" enterkeyhint="done" min="1" max="${BK_MAX}" step="1" placeholder="Las que encajen"></label>
+      <div class="sugg"><span>Prueba:</span><button type="button" data-n="0">Las que encajen</button>${[1,2,3,5,10].map(v=>`<button type="button" data-n="${v}">${v}</button>`).join('')}</div>
+    </div><button class="btn pri" type="submit" style="margin-top:12px;width:100%">Hacer mi plan</button></form><div id="tr"></div>`;
   let seq=0, tried=[];
   const pct=(p,b)=>{const r=Math.round(p/b*100); return r<1?'menos del 1 %':r+' %';};
   const listHTML=(b,all)=>all.length?`<details class="more"><summary>Ver todas las cartas que encajan (${all.length})</summary><div class="list" style="margin-top:10px">${all.slice(0,40).map(x=>`<a class="item" href="#carta/en/${encodeURIComponent(x.c.id)}"><img loading="lazy" src="${esc(imgLow(x.c.image))}" alt="" ${IMGERR}><div class="grow"><div class="nm">${esc(x.c.name)}</div><div class="st">${esc(x.c.setName)} · ≈ ${eurS(x.c.cm.trend)}</div><div class="fz">${esc(x.j.fase)}</div></div><div class="side">${vPill('compra')}</div></a>`).join('')}</div>${all.length>40?`<p class="tiny" style="margin-top:8px">Las 40 más caras de ${all.length}. En Buscar puedes filtrarlas todas.</p>`:''}</details>`:'';
@@ -3998,11 +4034,12 @@ function toolTengo(arg){
         <div class="grow"><div class="nm">${esc(x.c.name)}</div><div class="st">${esc(x.c.setName||'')}${x.c.localId?' · '+esc(x.c.localId):''}</div><div class="pr">${eurS(bkP(x))}</div><div class="tiny">Cumple ${n} de 3 preguntas${m?' · '+esc(m):''}</div></div>
         <div class="side">${vPill(x.j.v)}</div></a>`;}).join('')}</div>
       <p class="tiny">Cada una lleva su señal de verdad. En su ficha puedes pulsar «Vigilar» para seguirla.</p></section>`:'';
-  const draw=(b,P,all,N)=>{
+  const noteHTML=(t,btn)=>t?`<section class="card" id="plNote" role="note"><p class="small"><b>Ojo:</b> ${t}</p>${btn?`<button class="btn out sm" type="button" id="plAuto">${btn}</button>`:''}</section>`:'';
+  const draw=(b,P,all,N,want,note)=>{
     const left=b-P.total, BKC=['var(--brand)','var(--brand2)','var(--line3)'];   /* solo morados: verde, ámbar y rojo se reservan para la señal */
-    $('tr').innerHTML=`<section class="card" id="plan">
+    $('tr').innerHTML=`${noteHTML(note&&note.t,note&&note.btn)}<section class="card" id="plan">
       <div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><h2>Tu plan para ${eurS(b)}</h2><span class="pill-acc tierpill" role="img" aria-label="Cartas con señal verde"><i class="sig compra"></i>Señal verde</span></div>
-      <p class="small muted">${P.picks.length===1?'Con este presupuesto, una sola carta.':`Un reparto en ${P.picks.length} cartas, de mayor a menor y sin repetir Pokémon.`} ${P.picks.length===1?'Cumple':'Todas cumplen'} las 3 preguntas del canal.</p>
+      <p class="small muted">${P.picks.length===1?(want===1?'Una sola carta, como has pedido.':'Con este presupuesto, una sola carta.'):`${want===P.picks.length?'Tus '+want+' cartas':'Un reparto en '+P.picks.length+' cartas'}, de mayor a menor y sin repetir Pokémon.`} ${P.picks.length===1?'Cumple':'Todas cumplen'} las 3 preguntas del canal.</p>
       <div class="bkbar" role="img" aria-label="Reparto del presupuesto: ${P.picks.map(x=>esc(x.c.name)+' '+pct(bkP(x),b)).join(', ')}${left>=1?', sin gastar '+pct(left,b):''}">${P.picks.map((x,i)=>`<i style="flex:${bkP(x)};background:${BKC[i%BKC.length]}"></i>`).join('')}${left>=1?`<i class="rest" style="flex:${left}"></i>`:''}</div>
       <div class="list">${P.picks.map((x,i)=>`<a class="item bk" href="#carta/es/${encodeURIComponent(x.c.id)}"><span class="rank" aria-hidden="true">${i+1}</span><img loading="lazy" src="${esc(imgLow(x.c.image))}" alt="" ${IMGERR}>
         <div class="grow"><div class="nm">${esc(x.c.name)}</div><div class="st">${esc(x.c.setName||'')}${x.c.localId?' · '+esc(x.c.localId):''}</div><div class="pr">${eurS(bkP(x))} <span class="tiny">· ${pct(bkP(x),b)} de tu dinero</span></div><div class="tiny">${esc(bkWhy(x))}</div></div>
@@ -4015,13 +4052,22 @@ function toolTengo(arg){
       <p class="note">El historial cubre las cartas de 4 $ o más de las colecciones de 2019 a 2026.</p>`;
     $('bkAdd').addEventListener('click',()=>{const id=CP.addMany('Cesta de '+eurS(b),P.picks.map(x=>({id:x.c.id,name:x.c.name,localId:x.c.localId,image:x.c.image,rarity:x.c.rarity,set:x.c.setName,lang:'en'}))); if(id){toast('Cesta guardada en Scouting: ahí verás cómo evoluciona'); go('carpeta/'+id);}});
     $('bkAlt').addEventListener('click',()=>{tried=tried.concat(P.picks.map(x=>x.c.id)); run(b,true);});
+    if($('plAuto')) $('plAuto').addEventListener('click',()=>{$('tn').value=''; run(b);});
   };
   const run=async(b,alt)=>{
     if(!HD||!(b>0)||b>BK_TOP){seq++; $('tr').innerHTML='<p class="small" role="alert" style="color:var(--bad);font-weight:700">'+(b>BK_TOP?'Pon un presupuesto de hasta '+eurS(BK_TOP)+'.':'Pon un presupuesto mayor que 0.')+'</p>'; return;}
+    const nv=($('tn').value||'').trim(), n0=nv===''?0:+nv;
+    if(nv!==''&&!(Number.isInteger(n0)&&n0>=1&&n0<=BK_MAX)){seq++; $('tr').innerHTML='<p class="small" role="alert" style="color:var(--bad);font-weight:700">Pon de 1 a '+BK_MAX+' cartas, o déjalo vacío para que salgan las que encajen.</p>'; return;}
     if(!alt) tried=[]; const my=++seq, all=bkPool(b).sort((x,y)=>y.c.cm.trend-x.c.cm.trend);
+    /* si la combinación no encaja, se avisa con los datos y se hace lo más cercano a lo que ha pedido */
+    let want=n0, note=null;
+    if(n0&&all.length){const fit=bkFit(b,all), auto=bkCount(b), cheap=Math.min(...all.map(bkP));
+      if(n0>fit){want=fit; note={t:`con ${eurS(b)} no caben ${n0} cartas con señal verde sin repetir Pokémon: la más barata que encaja hoy ronda los ${eurS(cheap)}. Caben ${fit===1?'1 carta':'como mucho '+fit}, y este es el plan con ${fit===1?'una':fit}.`};}
+      else if(n0<auto) note={t:`con ${eurS(b)} el plan normal reparte el dinero en ${auto} cartas o más. Si quieres ${n0===1?'solo una':'solo '+n0}, aquí ${n0===1?'la tienes':'las tienes'}.`, btn:`Ver el reparto normal`};}
     $('tr').innerHTML='<section class="card" role="status"><b>Montando tu plan…</b><p class="small muted">Elegimos las cartas y comprobamos su precio y su señal de hoy.</p><div class="sk" style="height:120px"></div></section>';
-    let P=null; if(all.length){try{P=await bkPlan(b,tried);}catch(e){P=null;} if(my!==seq||!$('tr')) return;
-      if(P&&!P.picks.length&&alt){tried=[]; toast('No hay más combinaciones: volvemos a la primera'); try{P=await bkPlan(b,[]);}catch(e){P=null;} if(my!==seq||!$('tr')) return;}}
+    let P=null; if(all.length){try{P=await bkPlan(b,tried,want);}catch(e){P=null;} if(my!==seq||!$('tr')) return;
+      if(P&&!P.picks.length&&alt){tried=[]; toast('No hay más combinaciones: volvemos a la primera'); try{P=await bkPlan(b,[],want);}catch(e){P=null;} if(my!==seq||!$('tr')) return;}}
+    if(P&&want&&P.picks.length&&P.picks.length<want&&!(note&&n0>want)) note={t:`has pedido ${want} cartas y hoy salen ${P.picks.length} que cumplen todo con ${eurS(b)}.`};
     const has=!!(P&&P.picks.length), left=has?b-P.total:b, online=!P||P.live||!P.picks.length;
     /* si sobra una parte que se nota (15 % o más y al menos 20 €), o no hay cesta, se enseñan las que más se acercan */
     let N=[]; if(!has||(left>=20&&left>=b*0.15)){try{N=await bkNear(left,has?P.picks:[],has?P.live:online);}catch(e){N=[];} if(my!==seq||!$('tr')) return;}
@@ -4029,10 +4075,12 @@ function toolTengo(arg){
       $('tr').innerHTML=(all.length?errBox('No hemos podido montar la cesta.','Hoy ninguna de las cartas que encajaban sigue con la señal verde, o no hay conexión.','bkRetry')
         :`<div class="empty">Con ${eurS(b)} ninguna carta con señal verde cumple ahora las 3 preguntas.<span class="small">${N.length?'Abajo tienes las que más se acercan.':'Prueba con más presupuesto: las más baratas que seguimos rondan los 4 €.'}</span></div>`)+nearHTML(b,N,false)+listHTML(b,all);
       if($('bkRetry')) $('bkRetry').addEventListener('click',()=>run(b)); return;}
-    draw(b,P,all,N);
+    draw(b,P,all,N,want,note);
   };
   $('tf').addEventListener('submit',e=>{e.preventDefault(); run(+$('tb').value||0);});
-  document.querySelector('.sugg').addEventListener('click',e=>{const x=e.target.closest('[data-b]'); if(x){$('tb').value=x.dataset.b; run(+x.dataset.b);}});
+  $('tf').addEventListener('click',e=>{const x=e.target.closest('[data-b],[data-n]'); if(!x) return;
+    if(x.dataset.b){$('tb').value=x.dataset.b; run(+x.dataset.b); return;}
+    $('tn').value=x.dataset.n==='0'?'':x.dataset.n; if(+$('tb').value>0) run(+$('tb').value); else $('tb').focus();});
   if(+arg>0){$('tb').value=+arg; run(+arg);}
 }
 
