@@ -27,93 +27,85 @@
   }
  },
  "cartera": {
-  "_como_se_usa": "La cartera de Sergio (carpeta de La Funda en Scouting, solo lectura). «activo»: false = apagada. «fecha» = día de salida (los precios de salida son de ese día). «subtitulo»: {fecha} se cambia por el día de salida (dd/mm/aaaa). «aviso»: {fecha} se cambia por el día de los precios de hoy; si Sergio tiene alguna de las cartas, se añade aquí «Tengo N de estas cartas». «provisional»: true pone la marca «Provisional». Cada carta: «id» de TCGdex, «idioma» (es/en), «nombre», «coleccion», «precio» de salida en € (tendencia Cardmarket) y «motivo» (lo que muestran los datos, sin palabras de predicción ni de compra). Para cambiar la lista o el comparador solo se toca este bloque.",
+  "_como_se_usa": "La carpeta «La Funda» (Scouting, solo lectura; la lista la elige el equipo de Datos). «activo»: false = apagada. «fecha» = día de salida (los precios de salida son de ese día). «subtitulo»: {fecha} se cambia por el día de salida (dd/mm/aaaa). «aviso»: {fecha} se cambia por el día de los precios de hoy; si La Funda tiene alguna de las cartas, se añade aquí «La Funda tiene N de estas cartas.». Sin el nombre de Sergio ni primera persona («mi», «tengo»). «provisional»: true pone la marca «Provisional». Cada carta: «id» de TCGdex, «idioma» (es/en), «nombre», «coleccion», «precio» de salida en € (tendencia Cardmarket) y «motivo» (lo que muestran los datos, con su fecha, sin palabras de predicción ni de compra). Para cambiar la lista o el comparador solo se toca este bloque.",
   "activo": true,
   "provisional": false,
-  "titulo": "La cartera de Sergio",
-  "subtitulo": "10 cartas que he elegido con los datos de La Funda. El reto: batir al mercado. Así va desde el {fecha}.",
-  "fecha": "2026-11-25",
-  "aviso": "Es mi cartera de seguimiento, no una recomendación de compra ni consejo de inversión. Los precios pueden bajar. Precios orientativos de Cardmarket (vía TCGdex) a {fecha}.",
+  "titulo": "La Funda",
+  "subtitulo": "Cartas elegidas por el equipo de La Funda con sus datos de precios. Así va desde el {fecha}.",
+  "fecha": "2026-11-26",
+  "aviso": "Es una cartera de seguimiento, no una recomendación de compra ni consejo de inversión. Las cartas se eligieron porque su precio había subido en los últimos 30 días; eso no dice lo que pasará y los precios pueden bajar. Precios orientativos de Cardmarket (vía TCGdex) a {fecha}.",
   "cartas": [
    {
-    "id": "sv10-242",
+    "id": "me04-116",
     "idioma": "es",
-    "nombre": "Crobat ex del Team Rocket",
-    "coleccion": "Rivales Predestinados",
-    "precio": 19.83,
-    "motivo": "+29,0 % a 30 días (15,37 € → 19,83 €); media a 7 días 17,33 €"
-   },
-   {
-    "id": "sv10.5w-091",
-    "idioma": "es",
-    "nombre": "Deerling",
-    "coleccion": "Llama Blanca",
-    "precio": 17.49,
-    "motivo": "+20,5 % a 30 días (14,52 € → 17,49 €); media a 7 días 15,85 €"
+    "nombre": "Mega-Greninja ex (Rara Ilustración Especial)",
+    "coleccion": "Caos Creciente",
+    "precio": 140.61,
+    "motivo": "El 26/11: 140,61 € frente a la media de 7 días (111,33 €, +26,3 %) y de 30 días (115,53 €, +21,7 %)"
    },
    {
     "id": "sv08.5-144",
     "idioma": "es",
     "nombre": "Leafeon ex",
     "coleccion": "Evoluciones Prismáticas",
-    "precio": 276.99,
-    "motivo": "+19,8 % a 30 días (231,27 € → 276,99 €); media a 7 días 268,54 €"
+    "precio": 280.3,
+    "motivo": "El 26/11: 280,30 € frente a la media de 7 días (268,54 €, +4,4 %) y de 30 días (231,27 €, +21,2 %)"
    },
    {
-    "id": "sv10.5w-155",
+    "id": "me05-117",
     "idioma": "es",
-    "nombre": "Herdier",
-    "coleccion": "Llama Blanca",
-    "precio": 12.77,
-    "motivo": "+17,4 % a 30 días (10,88 € → 12,77 €); media a 7 días 10,93 €"
+    "nombre": "Morpeko ex",
+    "coleccion": "Oscuridad Absoluta",
+    "precio": 57.05,
+    "motivo": "El 26/11: 57,05 € frente a la media de 7 días (49,76 €, +14,7 %) y de 30 días (48,11 €, +18,6 %)"
    },
    {
-    "id": "me03-094",
+    "id": "me03-121",
     "idioma": "es",
-    "nombre": "Clefairy",
+    "nombre": "Meowth ex",
     "coleccion": "Equilibrio Perfecto",
-    "precio": 18.39,
-    "motivo": "+17,1 % a 30 días (15,71 € → 18,39 €); media a 7 días 16,94 €"
+    "precio": 78.09,
+    "motivo": "El 26/11: 78,09 € frente a la media de 7 días (74,36 €, +5,0 %) y de 30 días (70,23 €, +11,2 %)"
    },
    {
-    "id": "sv10-233",
+    "id": "me04-122",
     "idioma": "es",
-    "nombre": "Nidoking ex del Team Rocket",
-    "coleccion": "Rivales Predestinados",
-    "precio": 119.66,
-    "motivo": "+13,5 % a 30 días (105,47 € → 119,66 €); media a 7 días 113,30 €"
+    "nombre": "Mega-Greninja ex (Mega Hiper Rara)",
+    "coleccion": "Caos Creciente",
+    "precio": 129.5,
+    "motivo": "El 26/11: 129,50 € frente a la media de 7 días (113,01 €, +14,6 %) y de 30 días (116,75 €, +10,9 %)"
    },
    {
-    "id": "sv10.5w-166",
+    "id": "me01-182",
     "idioma": "es",
-    "nombre": "Reshiram ex",
-    "coleccion": "Llama Blanca",
-    "precio": 229.13,
-    "motivo": "+12,6 % a 30 días (203,57 € → 229,13 €); media a 7 días 215,16 €"
+    "nombre": "Mega-Kangaskhan ex",
+    "coleccion": "Megaevolución",
+    "precio": 53.48,
+    "motivo": "El 26/11: 53,48 € frente a la media de 7 días (49,68 €, +7,6 %) y de 30 días (48,36 €, +10,6 %)"
    },
    {
-    "id": "me03-119",
+    "id": "sv08.5-162",
     "idioma": "es",
-    "nombre": "Mega-Clefable ex",
+    "nombre": "Bramaluna ex",
+    "coleccion": "Evoluciones Prismáticas",
+    "precio": 184.59,
+    "motivo": "El 26/11: 184,59 € frente a la media de 7 días (171,60 €, +7,6 %) y de 30 días (168,09 €, +9,8 %)"
+   },
+   {
+    "id": "sv08.5-157",
+    "idioma": "es",
+    "nombre": "Ferropaladín ex",
+    "coleccion": "Evoluciones Prismáticas",
+    "precio": 43.96,
+    "motivo": "El 26/11: 43,96 € frente a la media de 7 días (43,16 €, +1,9 %) y de 30 días (40,50 €, +8,5 %)"
+   },
+   {
+    "id": "me03-120",
+    "idioma": "es",
+    "nombre": "Mega-Zygarde ex",
     "coleccion": "Equilibrio Perfecto",
-    "precio": 38.53,
-    "motivo": "+11,3 % a 30 días (34,62 € → 38,53 €); media a 7 días 35,29 €"
-   },
-   {
-    "id": "sv10.5w-100",
-    "idioma": "es",
-    "nombre": "Simisear",
-    "coleccion": "Llama Blanca",
-    "precio": 11.48,
-    "motivo": "+10,5 % a 30 días (10,39 € → 11,48 €); media a 7 días 10,71 €"
-   },
-   {
-    "id": "sv10.5b-101",
-    "idioma": "es",
-    "nombre": "Panpour",
-    "coleccion": "Fulgor Negro",
-    "precio": 11.17,
-    "motivo": "+10,4 % a 30 días (10,12 € → 11,17 €); media a 7 días 10,33 €"
+    "precio": 39.46,
+    "motivo": "El 26/11: 39,46 € frente a la media de 7 días (37,74 €, +4,6 %) y de 30 días (36,47 €, +8,2 %)"
    }
   ]
  },
