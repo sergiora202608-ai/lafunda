@@ -17,9 +17,10 @@
     "correos": "OPT_IN",
     "anuncios": "ANUNCIOS",
     "edad": "",
-    "fecha": "",
-    "texto": "",
-    "trampa": "email_address_check"
+    "fecha": "FECHA_REGISTRO",
+    "texto": "VERSION_TEXTO",
+    "trampa": "email_address_check",
+    "origen": "ORIGEN"
    },
    "fijos": {
     "locale": "es"
